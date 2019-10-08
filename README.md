@@ -1,14 +1,14 @@
-# RoSinA
-Robotic Swarm in ARGoS
+# RoSinA: Robotic Swarm in ARGoS
 
 ## About the project
 
-This project wants to reproduce part of the work done by Shervin Nouyan, Alexandre Campo and Marco Dorigo regarding robotic chain formations, with the aim of deepening the subject, reworking the controller logic and finally simulate it in an ARGoS environment.  
-Link to the article: [Path formation in a robot swarm](https://link.springer.com/article/10.1007/s11721-007-0009-6).
-
 This is the final project for the [Intelligent Robotic Systems course](https://www.unibo.it/en/teaching/course-unit-catalogue/course-unit/2018/384267) by professor [Andrea Roli](https://www.unibo.it/sitoweb/andrea.roli).  
 
+Our goal is to reproduce part of the work done by Shervin Nouyan, Alexandre Campo and Marco Dorigo regarding **robotic chain formations**, with the aim of deepening the subject, reworking the controller logic and finally simulate it in an ARGoS environment.  
+Link to the article: [Path formation in a robot swarm](https://link.springer.com/article/10.1007/s11721-007-0009-6).
+
 ## About the simulator
+
 ARGoS — http://www.argos-sim.info
 * Written in C++, open source
 * Multi-robot simulator
