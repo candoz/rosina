@@ -1,4 +1,4 @@
-# RoSinA: Robotic Swarm in ARGoS
+# RoSinA (Robotic Swarm in ARGoS)
 
 ## About the project
 
