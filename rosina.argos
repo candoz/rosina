@@ -16,7 +16,7 @@
         <footbot_motor_ground implementation="rot_z_only" />
         <range_and_bearing implementation="medium" medium="rab" />
       </sensors>
-      <params script="controller_mock.lua" />
+      <params script="controller.lua" />
     </lua_controller>
   </controllers>
 
