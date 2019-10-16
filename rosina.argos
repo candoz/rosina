@@ -12,6 +12,7 @@
         <leds implementation="default" medium="leds" />
       </actuators>
       <sensors>
+        <differential_steering implementation="default" noise_level="0.0" />
         <footbot_proximity implementation="default" show_rays="true" />
         <footbot_motor_ground implementation="rot_z_only" />
         <range_and_bearing implementation="medium" medium="rab" />
@@ -39,7 +40,7 @@
     <distribute>
       <position method="uniform" min="-4.9,-4.9,0" max="4.9,4.9,0" /> 
       <orientation method="gaussian" mean="0,0,0" std_dev="360,0,0" /> 
-      <entity quantity="5" max_trials="100"> 
+      <entity quantity="1" max_trials="100"> 
         <foot-bot id="fb" rab_range = "1">
           <controller config="lua" />
         </foot-bot>
@@ -57,7 +58,7 @@
   </media>
 
   <visualization>
-    <qt-opengl lua_editor="false">
+    <qt-opengl lua_editor="true">
       <camera>
         <placement idx="0" position="0,-2,8" look_at="0,0,-0.5" lens_focal_length="20" />
       </camera>
