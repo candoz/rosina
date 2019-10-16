@@ -9,24 +9,25 @@ end
 
 function step()
   -- log("" .. robot.motor_ground[1].value)
-  if robot.motor_ground[1].value < 0.9 or
-    robot.motor_ground[2].value < 0.9 or
-    robot.motor_ground[3].value < 0.9 or
-    robot.motor_ground[4].value < 0.9 then
+  if robot.motor_ground[1].value > 0.9 or
+      robot.motor_ground[2].value > 0.9 or
+      robot.motor_ground[3].value > 0.9 or
+      robot.motor_ground[4].value > 0.9 then
 
-    if robot.motor_ground[1].value < 0.4 or
-      robot.motor_ground[2].value < 0.4 or
-      robot.motor_ground[3].value < 0.4 or
-      robot.motor_ground[4].value < 0.4 then
+    robot.leds.set_all_colors("yellow")
+  elseif robot.motor_ground[1].value < 0.1 or
+      robot.motor_ground[2].value < 0.1 or
+      robot.motor_ground[3].value < 0.1 or
+      robot.motor_ground[4].value < 0.1 then
 
-      robot.leds.set_all_colors("yellow")
-    else
-      --robot.leds.set_all_colors("red")
-    end
+    robot.leds.set_all_colors("black")
+  else
+    robot.leds.set_all_colors("yellow")
   end
-  local sum = vector.vec2_polar_sum(vector.vec2_polar_sum(
-                                        motor_schemas.move_straight(), motor_schemas.move_random())
-                                        , motor_schemas.avoid_collisions_monosensor())
-  local final = motor_conversions.vec_to_vels(sum, robot.wheels.axis_length)
-  robot.wheels.set_velocity(final.vel_l, final.vel_r)
+  log("mg3: " .. robot.motor_ground[3].value)
+  local sum = vector.vec2_polar_sum(motor_schemas.move_straight(), motor_schemas.move_random())
+  --local sum = vector.vec2_polar_sum(
+  --                                      , motor_schemas.avoid_collisions_monosensor())
+  local vel_l, vel_r = motor_conversions.vec_to_vels(sum, robot.wheels.axis_length)
+  robot.wheels.set_velocity(vel_l, vel_r)
 end
