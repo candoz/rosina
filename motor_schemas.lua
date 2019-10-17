@@ -1,5 +1,6 @@
 local motor_schemas = {}
 
+utils = require "utils"
 PROXIMITY_THRESHOLD = 0.1
 
 function motor_schemas.move_straight()
@@ -33,21 +34,13 @@ function motor_schemas.move_perpendicular_monosensor()  -- TODO da fare
   return v
 end
 
-function motor_schemas.avoid_collisions_monosensor() --TODO: use utility function
-  local v = {length = 0, angle = 0}
-	local max = 0
-	local idx = 0
-	for i=1,24 do
-		if max < (robot.proximity[i].value - PROXIMITY_THRESHOLD) then
-			idx = i
-			max = (robot.proximity[i].value - PROXIMITY_THRESHOLD)
-		end
+function motor_schemas.avoid_collisions_monosensor()
+  local max = utils.get_sensor_with_highest_value(robot.proximity)
+	if max.value > PROXIMITY_THRESHOLD then
+    return {length = max.value, angle = max.angle + math.pi}
+  else
+    return {length = 0, angle = 0}
 	end
-	if max > 0 then
-		v.length = max
-		v.angle = robot.proximity[idx].angle
-	end
-	return v
 end
 
 function motor_schemas.avoid_collisions_multisensor()
@@ -55,7 +48,7 @@ function motor_schemas.avoid_collisions_multisensor()
   local counter = 0
   for i = 1, 24 do
     if robot.proximity[i].value > PROXIMITY_THRESHOLD then
-      v = vector.vec2_polar_sum(v, {length = robot.proximity[i].value - PROXIMITY_THRESHOLD, angle = robot.proximity[i].angle + math.pi})
+      v = vector.vec2_polar_sum(v, {length = robot.proximity[i].value, angle = robot.proximity[i].angle + math.pi})
       counter = counter + 1
     end
   end
