@@ -8,22 +8,22 @@ function init()
 end
 
 function step()
-  -- log("" .. robot.motor_ground[1].value)
   if robot.motor_ground[1].value > 0.9 or
       robot.motor_ground[2].value > 0.9 or
       robot.motor_ground[3].value > 0.9 or
       robot.motor_ground[4].value > 0.9 then
+    robot.leds.set_all_colors("green")
 
-    robot.leds.set_all_colors("yellow")
   elseif robot.motor_ground[1].value < 0.1 or
       robot.motor_ground[2].value < 0.1 or
       robot.motor_ground[3].value < 0.1 or
       robot.motor_ground[4].value < 0.1 then
+    robot.leds.set_all_colors("red")
 
-    robot.leds.set_all_colors("black")
   else
-    robot.leds.set_all_colors("yellow")
+    robot.leds.set_all_colors("black")
   end
+
   log("mg3: " .. robot.motor_ground[3].value)
   local sum = vector.vec2_polar_sum(motor_schemas.move_straight(), motor_schemas.move_random())
   --local sum = vector.vec2_polar_sum(
