@@ -10,7 +10,7 @@ end
 function utils.get_sensor_with_highest_value(sensors)
   highest = nil
   for _, sensor in pairs(sensors) do
-    if highest == nil or highest.value <= sensor.value then 
+    if highest == nil or highest.value <= sensor.value then
       highest = sensor
     end
   end

@@ -1,6 +1,7 @@
+utils = require "utils"
+
 local motor_schemas = {}
 
-utils = require "utils"
 PROXIMITY_THRESHOLD = 0.1
 
 function motor_schemas.move_straight()

@@ -1,7 +1,8 @@
-local MAX_SPEED = 10
 vector = require "vector"
 motor_schemas = require "motor_schemas"
 motor_conversions = require "motor_conversions"
+
+local MAX_SPEED = 10
 
 function init()
   robot.leds.set_all_colors("black")
