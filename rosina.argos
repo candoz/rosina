@@ -26,20 +26,20 @@
     </lua_controller>
   </controllers>
 
-  <arena size="10, 10, 1" center="0,0,0.5"> <!-- positional_grid_size="8,8,1"> -->
+  <arena size="10,10,1" center="0,0,0.5"> <!-- positional_grid_size="20,20,1"> -->
 
     <floor id="floor" source="image" path="dotted_ground.png" />
 
-    <box id="north_wall" size="10, 0.1, 0.4" movable="false">
+    <box id="north_wall" size="10,0.1,0.4" movable="false">
       <body position="0,5,0"  orientation="0,0,0" />
     </box>
-    <box id="east_wall" size="10, 0.1, 0.4" movable="false">
+    <box id="east_wall" size="10,0.1,0.4" movable="false">
       <body position="5,0,0"  orientation="90,0,0" />
     </box>
-    <box id="south_wall" size="10, 0.1, 0.4" movable="false">
+    <box id="south_wall" size="10,0.1,0.4" movable="false">
       <body position="0,-5,0"  orientation="0,0,0" />
     </box>
-    <box id="west_wall" size="10, 0.1, 0.4" movable="false">
+    <box id="west_wall" size="10,0.1,0.4" movable="false">
       <body position="-5,0,0"  orientation="-90,0,0" />
     </box>
 
