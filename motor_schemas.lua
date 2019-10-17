@@ -17,21 +17,17 @@ function motor_schemas.move_random()
   }
 end
 
-function motor_schemas.move_perpendicular_monosensor()  -- TODO da fare
-  local v = {length = 0, angle = 0}
-  local max = 0
-  local idx = 0
-  for i = 1, 24 do
-    if max < (robot.proximity[i].value - PROXIMITY_THRESHOLD) then
-      idx = i
-      max = max < (robot.proximity[i].value - PROXIMITY_THRESHOLD)
+function motor_schemas.move_perpendicular_monosensor()  -- TODO da fare, max.value oppure 1?
+  local max = utils.get_sensor_with_highest_value(robot.proximity)
+  if max.value > PROXIMITY_THRESHOLD then
+    if max.angle > 0 then
+      return {length = max.value, angle = max.angle - math.pi / 2}
+    else
+      return {length = max.value, angle = max.angle + math.pi / 2}
     end
-  end
-  if max > 0 then
-    v.length = max
-    v.angle = robot.proximity[idx].angle + (math.pi / 2)
-  end
-  return v
+  else
+    return {length = 0, angle = 0}
+	end
 end
 
 function motor_schemas.avoid_collisions_monosensor()
