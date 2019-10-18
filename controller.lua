@@ -57,13 +57,11 @@ end
 
 function search()
   local resulting_vector = {length = 0, angle = 0}
-  local nest = find_neighbour_state(ON_NEST)
-  local tail = find_neighbour_state(CHAIN_TAIL)
-  local link = find_neighbour_state(CHAIN_LINK)
+  local nest = check_neighbour_state(ON_NEST)
+  local tail = check_neighbour_state(CHAIN_TAIL)
+  local link = check_neighbour_state(CHAIN_LINK)
   
-  if (nest ~= nil and tail == nil and link == nil) or (tail ~= nil and nest == nil and link == nil) then
-    current_state = CHAIN_TAIL
-  elseif nest ~= nil or tail ~= nil or link ~= nil then
+  if nest == true or tail == true or link == true then
     current_state = EXPLORE_CHAIN
   elseif check_ground() == "nest" then
     current_state = ON_NEST
@@ -81,22 +79,42 @@ function search()
   return resulting_vector
 end
 
-function find_neighbour_state(state)
-  for _, rab in ipairs(robot.range_and_bearing) do
-		if rab.range < RANGE_OF_SENSING and rab.data[1] == state then
-      return rab
-    end
-  end
-  return nil
-end
-
 function on_nest()
   robot.range_and_bearing.set_data(1, ON_NEST)
+  robot.range_and_bearing.set_data(2, 0)
   return {length = 0, angle = 0}
 end
 
 function explore_chain()
-  return {length = 0, angle = 0}
+  local resulting_vector = {length = 0, angle = 0}
+  local nest = check_neighbour_state(ON_NEST)
+  local tail = check_neighbour_state(CHAIN_TAIL)
+  local link = check_neighbour_state(CHAIN_LINK)
+  
+  if (nest == true and tail == false and link == false) or (tail == true and nest == false and link == false) then
+    current_state = CHAIN_TAIL
+  elseif check_ground() == "prey" then
+    current_state = ON_PREY
+  else
+    -- controllo i due link per andare nella direzione giusta RANGE_OF_SENSING and rab.data[1] = CHAIN_LINK e RANGE_OF_SENSING and rab.data[2] ordinato
+
+    local avoid_mono = motor_schemas.avoid_collisions_monosensor()
+    local avoid_multi = motor_schemas.avoid_collisions_multisensor()
+    local move_perpendicular = motor_schemas.move_perpendicular_monosensor() -- da cambiare con clockwise
+    -- adjust distance
+    resulting_vector = vector.vec2_polar_sum(avoid_mono, avoid_multi)
+    resulting_vector = vector.vec2_polar_sum(resulting_vector, move_perpendicular)
+  end
+  return resulting_vector
+end
+
+function check_neighbour_state(state)
+  for _, rab in ipairs(robot.range_and_bearing) do
+		if rab.range < RANGE_OF_SENSING and rab.data[1] == state then
+      return true
+    end
+  end
+  return false
 end
 
 function chain_link()
