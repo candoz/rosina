@@ -12,7 +12,13 @@ function init()
 end
 
 function step()
-  robot.leds.set_all_colors(check_ground())
+  if check_ground() == "nest" then
+    robot.leds.set_all_colors("green")
+  elseif check_ground() == "prey" then
+    robot.leds.set_all_colors("red")
+  else
+    robot.leds.set_all_colors("black")
+  end
 
   local c_tbl =
     {
@@ -36,14 +42,14 @@ end
 function check_ground()
   if robot.motor_ground[1].value > 0.9 or robot.motor_ground[2].value > 0.9 or
       robot.motor_ground[3].value > 0.9 or robot.motor_ground[4].value > 0.9 then
-    return "green"
+    return "nest"
 
   elseif robot.motor_ground[1].value < 0.1 or robot.motor_ground[2].value < 0.1 or
       robot.motor_ground[3].value < 0.1 or robot.motor_ground[4].value < 0.1 then
-    return "red"
+    return "prey"
 
   else
-    return "black"
+    return "empty floor"
 
   end
 end
@@ -60,7 +66,7 @@ function search()
     current_state = CHAIN_TAIL
   elseif nest ~= nil or tail ~= nil or link ~= nil then
     current_state = EXPLORE_CHAIN
-  elseif check_ground() == "green" then
+  elseif check_ground() == "nest" then
     current_state = ON_NEST
   else
     local straight = motor_schemas.move_straight()
