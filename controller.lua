@@ -11,7 +11,7 @@ function init()
 end
 
 function step()
-  set_leds_color()
+  robot.leds.set_all_colors(check_ground())
 
   local straight = motor_schemas.move_straight()
   local random = motor_schemas.move_random()
@@ -33,17 +33,37 @@ function step()
   robot.wheels.set_velocity(vel_l, vel_r)
 end
 
-function set_leds_color()
+function check_ground()
   if robot.motor_ground[1].value > 0.9 or robot.motor_ground[2].value > 0.9 or
       robot.motor_ground[3].value > 0.9 or robot.motor_ground[4].value > 0.9 then
-    robot.leds.set_all_colors("green")
+    return "green"
 
   elseif robot.motor_ground[1].value < 0.1 or robot.motor_ground[2].value < 0.1 or
       robot.motor_ground[3].value < 0.1 or robot.motor_ground[4].value < 0.1 then
-    robot.leds.set_all_colors("red")
+    return "red"
 
   else
-    robot.leds.set_all_colors("black")
+    return "black"
 
   end
+end
+
+function search()
+  return {length = 0, angle = 0}
+end
+
+function on_nest()
+  return {length = 0, angle = 0}
+end
+
+function explore_chain()
+  return {length = 0, angle = 0}
+end
+
+function chain_link()
+  return {length = 0, angle = 0}
+end
+
+function on_pray()
+  return {length = 0, angle = 0}
 end
