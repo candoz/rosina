@@ -3,7 +3,7 @@ motor_schemas = require "motor_schemas"
 motor_conversions = require "motor_conversions"
 
 local MAX_SPEED = 10
-local SEARCH, ON_NEST, EXPLORE_CHAIN, CHAIN_LINK, ON_PREY = 1, 2, 3, 4, 5
+local SEARCH, ON_NEST, EXPLORE_CHAIN, CHAIN_LINK, CHAIN_TAIL, ON_PREY = 1, 2, 3, 4, 5, 6
 local current_state = SEARCH
 local motor_vector = {length = 0, angle = 0}
 
@@ -20,6 +20,7 @@ function step()
       [ON_NEST] = on_nest,
       [EXPLORE_CHAIN] = explore_chain,
       [CHAIN_LINK] = chain_link,
+      [CHAIN_TAIL] = chain_tail,
       [ON_PREY] = on_pray
     }
   local fun = c_tbl[current_state]
@@ -49,8 +50,17 @@ end
 
 function search()
   local resulting_vector = {length = 0, angle = 0}
-  log(check_ground())
-  if check_ground() == "green" then
+  local nest = find_neighbour_state(ON_NEST)
+  local tail = find_neighbour_state(CHAIN_TAIL)
+  local link = find_neighbour_state(CHAIN_LINK)
+
+  robot.range_and_bearing.set_data(1, SEARCH)
+  
+  if (nest ~= nil and tail == nil and link == nil) or (tail ~= nil and nest == nil and link == nil) then
+    current_state = CHAIN_TAIL
+  elseif nest ~= nil or tail ~= nil or link ~= nil then
+    current_state = EXPLORE_CHAIN
+  elseif check_ground() == "green" then
     current_state = ON_NEST
   else
     local straight = motor_schemas.move_straight()
@@ -66,7 +76,17 @@ function search()
   return resulting_vector
 end
 
+function find_neighbour_state(state)
+  for _, rab in ipairs(robot.range_and_bearing) do
+		if rab.data[1] == state then
+      return rab
+    end
+  end
+  return nil
+end
+
 function on_nest()
+  -- emit on_nest signal with range and bearing
   return {length = 0, angle = 0}
 end
 
@@ -75,6 +95,10 @@ function explore_chain()
 end
 
 function chain_link()
+  return {length = 0, angle = 0}
+end
+
+function chain_tail()
   return {length = 0, angle = 0}
 end
 
