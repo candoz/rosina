@@ -3,7 +3,7 @@ motor_schemas = require "motor_schemas"
 motor_conversions = require "motor_conversions"
 
 local MAX_SPEED = 10
-local RANGE_OF_SENSING = 25
+local RANGE_OF_SENSING = 30
 local SEARCH, ON_NEST, EXPLORE_CHAIN, CHAIN_LINK, CHAIN_TAIL, ON_PREY = 1, 2, 3, 4, 5, 6
 local current_state = SEARCH
 local motor_vector = {length = 0, angle = 0}
@@ -60,8 +60,6 @@ function search()
   local nest = find_neighbour_state(ON_NEST)
   local tail = find_neighbour_state(CHAIN_TAIL)
   local link = find_neighbour_state(CHAIN_LINK)
-
-  robot.range_and_bearing.set_data(1, SEARCH)
   
   if (nest ~= nil and tail == nil and link == nil) or (tail ~= nil and nest == nil and link == nil) then
     current_state = CHAIN_TAIL
@@ -94,12 +92,10 @@ end
 
 function on_nest()
   robot.range_and_bearing.set_data(1, ON_NEST)
-  -- emit on_nest signal with range and bearing
   return {length = 0, angle = 0}
 end
 
 function explore_chain()
-  robot.range_and_bearing.set_data(1, EXPLORE_CHAIN)
   return {length = 0, angle = 0}
 end
 
