@@ -3,6 +3,7 @@ motor_schemas = require "motor_schemas"
 motor_conversions = require "motor_conversions"
 
 local MAX_SPEED = 10
+local RANGE_OF_SENSING = 25
 local SEARCH, ON_NEST, EXPLORE_CHAIN, CHAIN_LINK, CHAIN_TAIL, ON_PREY = 1, 2, 3, 4, 5, 6
 local current_state = SEARCH
 local motor_vector = {length = 0, angle = 0}
@@ -27,7 +28,7 @@ function step()
       [EXPLORE_CHAIN] = explore_chain,
       [CHAIN_LINK] = chain_link,
       [CHAIN_TAIL] = chain_tail,
-      [ON_PREY] = on_pray
+      [ON_PREY] = on_prey
     }
   local fun = c_tbl[current_state]
   if(fun) then
@@ -35,7 +36,7 @@ function step()
   end
   
   local vel_l, vel_r = motor_conversions.vec_to_vels(motor_vector, robot.wheels.axis_length)
-  -- log("vel_l: " .. vel_l .. " vel_r: " .. vel_r)
+  log("vel_l: " .. vel_l .. " vel_r: " .. vel_r)
   robot.wheels.set_velocity(vel_l, vel_r)
 end
 
@@ -84,7 +85,7 @@ end
 
 function find_neighbour_state(state)
   for _, rab in ipairs(robot.range_and_bearing) do
-		if rab.data[1] == state then
+		if rab.range < RANGE_OF_SENSING and rab.data[1] == state then
       return rab
     end
   end
@@ -92,22 +93,27 @@ function find_neighbour_state(state)
 end
 
 function on_nest()
+  robot.range_and_bearing.set_data(1, ON_NEST)
   -- emit on_nest signal with range and bearing
   return {length = 0, angle = 0}
 end
 
 function explore_chain()
+  robot.range_and_bearing.set_data(1, EXPLORE_CHAIN)
   return {length = 0, angle = 0}
 end
 
 function chain_link()
+  robot.range_and_bearing.set_data(1, CHAIN_LINK)
   return {length = 0, angle = 0}
 end
 
 function chain_tail()
+  robot.range_and_bearing.set_data(1, CHAIN_TAIL)
   return {length = 0, angle = 0}
 end
 
-function on_pray()
+function on_prey()
+  robot.range_and_bearing.set_data(1, ON_PREY)
   return {length = 0, angle = 0}
 end
