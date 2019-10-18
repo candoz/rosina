@@ -14,7 +14,18 @@ end
 function step()
   robot.leds.set_all_colors(check_ground())
 
-  motor_vector = search()
+  local c_tbl =
+    {
+      [SEARCH] = search,
+      [ON_NEST] = on_nest,
+      [EXPLORE_CHAIN] = explore_chain,
+      [CHAIN_LINK] = chain_link,
+      [ON_PREY] = on_pray
+    }
+  local fun = c_tbl[current_state]
+  if(fun) then
+    motor_vector = fun()
+  end
   
   local vel_l, vel_r = motor_conversions.vec_to_vels(motor_vector, robot.wheels.axis_length)
   -- log("vel_l: " .. vel_l .. " vel_r: " .. vel_r)
