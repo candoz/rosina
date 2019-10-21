@@ -1,13 +1,16 @@
 vector = require "vector"
 motor_schemas = require "motor_schemas"
 motor_conversions = require "motor_conversions"
+utils = require "utils"
 
 local MAX_SPEED = 10
-local FIRST_RANGE_OF_SENSING, SECOND_RANGE_OF_SENSING = 30, 60
 local SEARCH, ON_NEST, EXPLORE_CHAIN, CHAIN_LINK, CHAIN_TAIL, ON_PREY = 1, 2, 3, 4, 5, 6
+local RAB_FIRST_RANGE_OF_SENSING, RAB_SECOND_RANGE_OF_SENSING = 30, 60
+local RAB_STATE_INDEX, RAB_POSITION_INDEX = 1, 2  -- POSITION in chain
+
 local current_state = SEARCH
-local motor_vector = {length = 0, angle = 0}
 local position_in_chain = 0
+local motor_vector = {length = 0, angle = 0}
 
 function init()
   robot.leds.set_all_colors("black")
@@ -25,8 +28,7 @@ function step()
     robot.leds.set_all_colors("black")
   end
 
-  local c_tbl =
-    {
+  local c_tbl = {
       [SEARCH] = search,
       [ON_NEST] = on_nest,
       [EXPLORE_CHAIN] = explore_chain,
@@ -35,7 +37,7 @@ function step()
       [ON_PREY] = on_prey
     }
   local fun = c_tbl[current_state]
-  if(fun) then
+  if (fun) then
     motor_vector = fun()
   end
   
@@ -60,9 +62,9 @@ end
 
 function search()
   local resulting_vector = {length = 0, angle = 0}
-  local nest = check_neighbour_state(ON_NEST, FIRST_RANGE_OF_SENSING)
-  local tail = check_neighbour_state(CHAIN_TAIL, FIRST_RANGE_OF_SENSING)
-  local link = check_neighbour_state(CHAIN_LINK, FIRST_RANGE_OF_SENSING)
+  local nest = utils.check_neighbour_value(RAB_STATE_INDEX, ON_NEST, RAB_FIRST_RANGE_OF_SENSING)
+  local tail = utils.check_neighbour_value(RAB_STATE_INDEX, CHAIN_TAIL, RAB_FIRST_RANGE_OF_SENSING)
+  local link = utils.check_neighbour_value(RAB_STATE_INDEX, CHAIN_LINK, RAB_FIRST_RANGE_OF_SENSING)
   
   if nest == true or tail == true or link == true then
     current_state = EXPLORE_CHAIN
@@ -90,19 +92,19 @@ end
 
 function explore_chain()
   local resulting_vector = {length = 0, angle = 0}
-  local nest_first = check_neighbour_state(ON_NEST, FIRST_RANGE_OF_SENSING)
-  local nest_second = check_neighbour_state(ON_NEST, SECOND_RANGE_OF_SENSING)
-  local tail_first = check_neighbour_state(CHAIN_TAIL, FIRST_RANGE_OF_SENSING)
-  local tail_second = check_neighbour_state(CHAIN_TAIL, SECOND_RANGE_OF_SENSING)
-  local link_first = check_neighbour_state(CHAIN_LINK, FIRST_RANGE_OF_SENSING)
-  local link_second = check_neighbour_state(CHAIN_LINK, SECOND_RANGE_OF_SENSING)
+  local nest_first = utils.check_neighbour_value(RAB_STATE_INDEX, ON_NEST, RAB_FIRST_RANGE_OF_SENSING)
+  local nest_second = utils.check_neighbour_value(RAB_STATE_INDEX, ON_NEST, RAB_SECOND_RANGE_OF_SENSING)
+  local tail_first = utils.check_neighbour_value(RAB_STATE_INDEX, CHAIN_TAIL, RAB_FIRST_RANGE_OF_SENSING)
+  local tail_second = utils.check_neighbour_value(RAB_STATE_INDEX, CHAIN_TAIL, RAB_SECOND_RANGE_OF_SENSING)
+  local link_first = utils.check_neighbour_value(RAB_STATE_INDEX, CHAIN_LINK, RAB_FIRST_RANGE_OF_SENSING)
+  local link_second = utils.check_neighbour_value(RAB_STATE_INDEX, CHAIN_LINK, RAB_SECOND_RANGE_OF_SENSING)
   
   if nest_first == true and tail_second == false and link_second == false then
     current_state = CHAIN_TAIL
     position_in_chain = 1
   elseif tail_first == true and nest_second == false and link_second == false then
     current_state = CHAIN_TAIL
-    position_in_chain = return_rab_neighbour_state(CHAIN_TAIL, FIRST_RANGE_OF_SENSING).data[2] + 1
+    position_in_chain = utils.return_rab_neighbour(RAB_STATE_INDEX, CHAIN_TAIL, RAB_FIRST_RANGE_OF_SENSING).data[RAB_POSITION_INDEX] + 1
   --elseif check_ground() == "prey" then
   --  current_state = ON_PREY
   else
@@ -118,35 +120,18 @@ function explore_chain()
   return resulting_vector
 end
 
-function check_neighbour_state(state, range_of_sensing)
-  if return_rab_neighbour_state(state, range_of_sensing) ~= nil then
-    return true
-  else
-    return false
-  end
-end
-
-function return_rab_neighbour_state(state, range_of_sensing)
-  for _, rab in ipairs(robot.range_and_bearing) do
-		if rab.range < range_of_sensing and rab.data[1] == state then
-      return rab
-    end
-  end
-  return nil
-end
-
 function chain_link()
-  robot.range_and_bearing.set_data(1, CHAIN_LINK)
-  robot.range_and_bearing.set_data(2, position_in_chain)
+  robot.range_and_bearing.set_data(RAB_STATE_INDEX, CHAIN_LINK)
+  robot.range_and_bearing.set_data(RAB_POSITION_INDEX, position_in_chain)
   return {length = 0, angle = 0}
 end
 
 function chain_tail()
-  robot.range_and_bearing.set_data(1, CHAIN_TAIL)
-  robot.range_and_bearing.set_data(2, position_in_chain)
-  local nest = check_neighbour_state(ON_NEST, FIRST_RANGE_OF_SENSING)
-  local tail = check_neighbour_state(CHAIN_TAIL, FIRST_RANGE_OF_SENSING)
-  local link = check_neighbour_state(CHAIN_LINK, FIRST_RANGE_OF_SENSING)
+  robot.range_and_bearing.set_data(RAB_STATE_INDEX, CHAIN_TAIL)
+  robot.range_and_bearing.set_data(RAB_POSITION_INDEX, position_in_chain)
+  local nest = utils.check_neighbour_value(RAB_STATE_INDEX, ON_NEST, RAB_FIRST_RANGE_OF_SENSING)
+  local tail = utils.check_neighbour_value(RAB_STATE_INDEX, CHAIN_TAIL, RAB_FIRST_RANGE_OF_SENSING)
+  local link = utils.check_neighbour_value(RAB_STATE_INDEX, CHAIN_LINK, RAB_FIRST_RANGE_OF_SENSING)
   if tail == true and (nest == true or link == true) then
     current_state = CHAIN_LINK
   end

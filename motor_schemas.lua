@@ -3,6 +3,7 @@ utils = require "utils"
 local motor_schemas = {}
 
 PROXIMITY_THRESHOLD = 0.1
+DISTANCE_TOLERANCE = 0.1  -- to avoidoscillating behaviour in Adjust_distance motor schema
 
 function motor_schemas.move_straight()
   return {
@@ -53,6 +54,14 @@ function motor_schemas.avoid_collisions_multisensor()
     v.length = v.length / counter   -- MaybeTODO another possible solution: take max value
   end
   return v
+end
+
+function motor_schemas.adjust_distance(angle, current_distance, desired_distance)
+  
+
+  return {
+    --TODO
+  }
 end
 
 function motor_schemas.align(angle_previous, angle_next)
