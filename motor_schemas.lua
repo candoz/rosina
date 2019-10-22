@@ -64,6 +64,17 @@ function motor_schemas.adjust_distance(angle, current_distance, desired_distance
   }
 end
 
+function motor_schemas.adjust_distance_from_position_footbot(position_in_chain, desired_distance, range_of_sensing)
+  for _, rab in ipairs(robot.range_and_bearing) do
+    if rab.range < range_of_sensing and rab.data[2] == position_in_chain then
+      local difference = math.abs(rab.range - desired_distance)
+      if difference > DISTANCE_TOLERANCE then
+        return { length = difference, angle = rab.horizontal_bearing }
+    end
+  end
+  return { length = 0, angle = 0 }
+end
+
 function motor_schemas.align(angle_previous, angle_next)
   return {
     --TODO
