@@ -70,6 +70,7 @@ function motor_schemas.adjust_distance_from_position_footbot(position_in_chain, 
       local difference = math.abs(rab.range - desired_distance)
       if difference > DISTANCE_TOLERANCE then
         return { length = difference, angle = rab.horizontal_bearing }
+      end
     end
   end
   return { length = 0, angle = 0 }
