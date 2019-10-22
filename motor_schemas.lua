@@ -2,8 +2,9 @@ utils = require "utils"
 
 local motor_schemas = {}
 
-PROXIMITY_THRESHOLD = 0.1
-DISTANCE_TOLERANCE = 0.5  -- to avoidoscillating behaviour in Adjust_distance motor schema
+local PROXIMITY_THRESHOLD = 0.1
+local DISTANCE_TOLERANCE = 0.5  -- to avoidoscillating behaviour in Adjust_distance motor schema
+local RAB_STATE_INDEX, RAB_POSITION_INDEX = 1, 2
 
 function motor_schemas.move_straight()
   return {
@@ -64,17 +65,14 @@ function motor_schemas.adjust_distance(angle, current_distance, desired_distance
   }
 end
 
-function motor_schemas.adjust_distance_from_position_footbot(position_in_chain, desired_distance, range_of_sensing)
-  for _, rab in ipairs(robot.range_and_bearing) do
-    if rab.range < range_of_sensing and rab.data[2] == position_in_chain then
-      if rab.range > desired_distance + DISTANCE_TOLERANCE then
-        return { length = math.abs(rab.range - desired_distance) / 10, angle = rab.horizontal_bearing }
-      elseif rab.range < desired_distance - DISTANCE_TOLERANCE then
-        return { length = math.abs(rab.range - desired_distance) / 10, angle = rab.horizontal_bearing + math.pi }
-      end
-    end
+function motor_schemas.adjust_distance_from_footbot(rab, desired_distance, range_of_sensing)
+  if rab.range > desired_distance + DISTANCE_TOLERANCE then
+    return { length = math.abs(rab.range - desired_distance) / 5, angle = rab.horizontal_bearing }
+  elseif rab.range < desired_distance - DISTANCE_TOLERANCE then
+    return { length = math.abs(rab.range - desired_distance) / 5, angle = rab.horizontal_bearing + math.pi }
+  else
+    return { length = 0, angle = 0 }
   end
-  return { length = 0, angle = 0 }
 end
 
 function motor_schemas.align(angle_previous, angle_next)
