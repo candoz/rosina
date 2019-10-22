@@ -36,4 +36,16 @@ function utils.return_rab_neighbour(index, value, range_of_sensing)
   return nil
 end
 
+-- Returns the first rab with the given value at data[index] under the range_of_sensing
+function utils.return_max_rab_neighbour(index, range_of_sensing)
+  local max, max_rab = -1, nil
+  for _, rab in ipairs(robot.range_and_bearing) do
+    if rab.range < range_of_sensing and max < rab.data[index] then
+      max = rab.data[index]
+      max_rab = rab
+    end
+  end
+  return max_rab
+end
+
 return utils
