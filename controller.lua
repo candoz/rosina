@@ -23,6 +23,8 @@ function step()
     robot.leds.set_all_colors("red")
   elseif current_state == CHAIN_TAIL then
     robot.leds.set_all_colors("yellow")
+  elseif current_state == CHAIN_LINK then
+    robot.leds.set_all_colors("white")
   else
     robot.leds.set_all_colors("black")
   end
@@ -111,21 +113,10 @@ function explore_chain()
     -- controllo i due link per andare nella direzione giusta RANGE_OF_SENSING and rab.data[1] = CHAIN_LINK e RANGE_OF_SENSING and rab.data[2] ordinato
 
     local avoid_mono = motor_schemas.avoid_collisions_monosensor()
-    local move_perpendicular = motor_schemas.move_perpendicular_monosensor() -- da cambiare con clockwise
-    
-    local max_pos = -1
-    for _, rab in ipairs(robot.range_and_bearing) do
-      if rab.range < RAB_FIRST_RANGE_OF_SENSING and max_pos < rab.data[2] then
-        max_pos = rab.data[2]
-      end
-    end
-    local adjust_distance = motor_schemas.adjust_distance_from_position_footbot(max_pos, 25, RAB_FIRST_RANGE_OF_SENSING)
-    --log("lenght: " .. adjust_distance.length .. " angle: " .. adjust_distance.angle)
-
+    local move_perpendicular = motor_schemas.move_perpendicular_monosensor()
+    local adjust_distance = motor_schemas.adjust_distance_from_footbot(utils.return_max_rab_neighbour(RAB_POSITION_INDEX, RAB_FIRST_RANGE_OF_SENSING), 25, RAB_FIRST_RANGE_OF_SENSING)
     resulting_vector = vector.vec2_polar_sum(avoid_mono, move_perpendicular)
     resulting_vector = vector.vec2_polar_sum(resulting_vector, adjust_distance)
-    -- log("lenght: " .. resulting_vector.length .. " angle: " .. resulting_vector.angle)
-    -- log("perp: " .. move_perpendicular.length)
   end
   return resulting_vector
 end
