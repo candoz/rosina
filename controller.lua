@@ -136,7 +136,7 @@ function chain_tail()
   if tail == true and (nest == true or link == true) then
     current_state = CHAIN_LINK
   end
-  return {length = 0, angle = 0}
+  return motor_schemas.adjust_distance_from_footbot(utils.return_rab_neighbour(RAB_POSITION_INDEX, position_in_chain - 1,RAB_FIRST_RANGE_OF_SENSING), 25, RAB_FIRST_RANGE_OF_SENSING)
 end
 
 function on_prey()
