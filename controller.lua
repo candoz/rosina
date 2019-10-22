@@ -17,7 +17,6 @@ function init()
 end
 
 function step()
-  log(position_in_chain)
   if check_ground() == "nest" then
     robot.leds.set_all_colors("green")
   elseif check_ground() == "prey" then
@@ -42,6 +41,7 @@ function step()
   end
   
   local vel_l, vel_r = motor_conversions.vec_to_vels(motor_vector, robot.wheels.axis_length)
+  -- log("l " .. vel_l .. " r " .. vel_r)
   robot.wheels.set_velocity(vel_l, vel_r)
 end
 
@@ -101,7 +101,7 @@ function explore_chain()
   
   if nest_first == true and tail_second == false and link_second == false then
     current_state = CHAIN_TAIL
-    position_in_chain = 1
+    position_in_chain = utils.return_rab_neighbour(RAB_STATE_INDEX, ON_NEST, RAB_FIRST_RANGE_OF_SENSING).data[RAB_POSITION_INDEX] + 1
   elseif tail_first == true and nest_second == false and link_second == false then
     current_state = CHAIN_TAIL
     position_in_chain = utils.return_rab_neighbour(RAB_STATE_INDEX, CHAIN_TAIL, RAB_FIRST_RANGE_OF_SENSING).data[RAB_POSITION_INDEX] + 1
@@ -112,9 +112,19 @@ function explore_chain()
 
     local avoid_mono = motor_schemas.avoid_collisions_monosensor()
     local move_perpendicular = motor_schemas.move_perpendicular_monosensor() -- da cambiare con clockwise
-    -- adjust distance
-    move_perpendicular.length = 1
-    resulting_vector = move_perpendicular -- vector.vec2_polar_sum(avoid_mono, move_perpendicular)
+    
+    local max_pos = -1
+    for _, rab in ipairs(robot.range_and_bearing) do
+      if rab.range < RAB_FIRST_RANGE_OF_SENSING and max_pos < rab.data[2] then
+        max_pos = rab.data[2]
+      end
+    end
+    local adjust_distance = motor_schemas.adjust_distance_from_position_footbot(max_pos, 25, RAB_FIRST_RANGE_OF_SENSING)
+    --log("lenght: " .. adjust_distance.length .. " angle: " .. adjust_distance.angle)
+
+    resulting_vector = vector.vec2_polar_sum(avoid_mono, move_perpendicular)
+    resulting_vector = vector.vec2_polar_sum(resulting_vector, adjust_distance)
+    -- log("lenght: " .. resulting_vector.length .. " angle: " .. resulting_vector.angle)
     -- log("perp: " .. move_perpendicular.length)
   end
   return resulting_vector
