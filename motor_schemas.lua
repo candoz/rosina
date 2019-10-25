@@ -20,17 +20,16 @@ function motor_schemas.move_random()
   }
 end
 
-function motor_schemas.move_perpendicular_monosensor()  -- TODO da fare, max.value oppure 1?
-  local max = utils.get_sensor_with_highest_value(robot.proximity)
-  if max.value > PROXIMITY_THRESHOLD then
-    if max.angle > 0 then
-      return {length = 0.7, angle = max.angle - math.pi / 2}
-    else
-      return {length = 0.7, angle = max.angle + math.pi / 2}
-    end
+function motor_schemas.circumnavigate_towards_the_tail(max_rab, non_max_rab)
+  if non_max_rab ~= nil then
+    return vector.vec2_polar_sum({ length = max_rab.range / 30, angle = max_rab.horizontal_bearing }, { length = non_max_rab.range / 30, angle = non_max_rab.horizontal_bearing + math.pi })
   else
-    return {length = 0, angle = 0}
-	end
+    if max_rab.horizontal_bearing > 0 then
+      return {length = 0.7, angle = max_rab.horizontal_bearing - math.pi / 2}
+    else
+      return {length = 0.7, angle = max_rab.horizontal_bearing + math.pi / 2}
+    end
+  end
 end
 
 function motor_schemas.avoid_collisions_monosensor()

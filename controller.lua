@@ -109,20 +109,17 @@ function explore_chain()
   local link_first = utils.check_neighbour_value(RAB_STATE_INDEX, CHAIN_LINK, RAB_FIRST_RANGE_OF_SENSING)
   local link_second = utils.check_neighbour_value(RAB_STATE_INDEX, CHAIN_LINK, RAB_SECOND_RANGE_OF_SENSING)
   local max_rab = utils.return_max_rab_neighbour(RAB_POSITION_INDEX, RAB_FIRST_RANGE_OF_SENSING)
-  
+  local non_max_rab = utils.return_rab_neighbour(RAB_POSITION_INDEX, max_rab.data[RAB_POSITION_INDEX] - 1, RAB_SECOND_RANGE_OF_SENSING)
+
   if max_rab == nil then
     current_state = SEARCH
   elseif (nest_first ~= nil and nest_first.data[3] == 0 and tail_second == false and link_second == false) or
           (tail_first == true and nest_second == false and link_second == false) then
     position_in_chain = max_rab.data[2] + 1
     current_state = CHAIN_TAIL
-  --elseif check_ground() == "prey" then
-  --  current_state = ON_PREY
   else
-    -- controllo i due link per andare nella direzione giusta RANGE_OF_SENSING and rab.data[1] = CHAIN_LINK e RANGE_OF_SENSING and rab.data[2] ordinato
-
     local avoid_mono = motor_schemas.avoid_collisions_monosensor()
-    local move_perpendicular = motor_schemas.move_perpendicular_monosensor()
+    local move_perpendicular = motor_schemas.circumnavigate_towards_the_tail(max_rab, non_max_rab)
 
     local adjust_distance = motor_schemas.adjust_distance_from_footbot(max_rab, 25)
     resulting_vector = vector.vec2_polar_sum(avoid_mono, move_perpendicular)
