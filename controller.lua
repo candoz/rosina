@@ -107,12 +107,9 @@ function explore_chain()
   if max_rab == nil then
     log("entraaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa")
     current_state = SEARCH
-  elseif nest_first == true and tail_second == false and link_second == false then
-    position_in_chain = utils.return_rab_neighbour(RAB_STATE_INDEX, ON_NEST, RAB_FIRST_RANGE_OF_SENSING).data[RAB_POSITION_INDEX] + 1
-    current_state = CHAIN_TAIL
-    log("entraaaaaaaa")
-  elseif tail_first == true and nest_second == false and link_second == false then
-    position_in_chain = utils.return_rab_neighbour(RAB_STATE_INDEX, CHAIN_TAIL, RAB_FIRST_RANGE_OF_SENSING).data[RAB_POSITION_INDEX] + 1
+  elseif (nest_first == true and tail_second == false and link_second == false) or
+          (tail_first == true and nest_second == false and link_second == false) then
+    position_in_chain = max_rab.data[2] + 1
     current_state = CHAIN_TAIL
   --elseif check_ground() == "prey" then
   --  current_state = ON_PREY
@@ -122,7 +119,7 @@ function explore_chain()
     local avoid_mono = motor_schemas.avoid_collisions_monosensor()
     local move_perpendicular = motor_schemas.move_perpendicular_monosensor()
 
-    local adjust_distance = motor_schemas.adjust_distance_from_footbot(max_rab, 23, RAB_FIRST_RANGE_OF_SENSING)
+    local adjust_distance = motor_schemas.adjust_distance_from_footbot(max_rab, 23)
     resulting_vector = vector.vec2_polar_sum(avoid_mono, move_perpendicular)
     resulting_vector = vector.vec2_polar_sum(resulting_vector, adjust_distance)
   end
@@ -135,11 +132,10 @@ function chain_link()
   robot.range_and_bearing.set_data(RAB_POSITION_INDEX, position_in_chain)
 
   local avoid_mono = motor_schemas.avoid_collisions_monosensor()
-  
 
-  local adjust_distance_prev = motor_schemas.adjust_distance_from_footbot(utils.return_rab_neighbour(RAB_POSITION_INDEX, position_in_chain - 1,RAB_FIRST_RANGE_OF_SENSING), 25, RAB_FIRST_RANGE_OF_SENSING)
-  --local adjust_distance_next = motor_schemas.adjust_distance_from_footbot(utils.return_rab_neighbour(RAB_POSITION_INDEX, position_in_chain + 1,RAB_FIRST_RANGE_OF_SENSING), 25, RAB_FIRST_RANGE_OF_SENSING)
-  local align = motor_schemas.align(position_in_chain, RAB_FIRST_RANGE_OF_SENSING)
+  local adjust_distance_prev = motor_schemas.adjust_distance_from_footbot(utils.return_rab_neighbour(RAB_POSITION_INDEX, position_in_chain - 1, RAB_SECOND_RANGE_OF_SENSING), 23)
+  local adjust_distance_next = motor_schemas.adjust_distance_from_footbot(utils.return_rab_neighbour(RAB_POSITION_INDEX, position_in_chain + 1, RAB_SECOND_RANGE_OF_SENSING), 23)
+  local align = motor_schemas.align(position_in_chain, RAB_SECOND_RANGE_OF_SENSING)
   resulting_vector = vector.vec2_polar_sum(avoid_mono, adjust_distance_prev)
   --resulting_vector = vector.vec2_polar_sum(resulting_vector, adjust_distance_next)
   resulting_vector = vector.vec2_polar_sum(resulting_vector, align)
@@ -150,14 +146,12 @@ end
 function chain_tail()
   robot.range_and_bearing.set_data(RAB_STATE_INDEX, CHAIN_TAIL)
   robot.range_and_bearing.set_data(RAB_POSITION_INDEX, position_in_chain)
-  local nest = utils.check_neighbour_value(RAB_STATE_INDEX, ON_NEST, RAB_FIRST_RANGE_OF_SENSING)
-  local tail = utils.check_neighbour_value(RAB_STATE_INDEX, CHAIN_TAIL, RAB_FIRST_RANGE_OF_SENSING)
-  local link = utils.check_neighbour_value(RAB_STATE_INDEX, CHAIN_LINK, RAB_FIRST_RANGE_OF_SENSING)
-  if tail == true and (nest == true or link == true) then
+  local tail = utils.return_rab_neighbour(RAB_STATE_INDEX, CHAIN_TAIL, RAB_FIRST_RANGE_OF_SENSING)
+  if tail ~= nil and tail.data[2] == position_in_chain + 1 then
     current_state = CHAIN_LINK
     return { length = 0, angle = 0 }
   else
-    return motor_schemas.adjust_distance_from_footbot(utils.return_rab_neighbour(RAB_POSITION_INDEX, position_in_chain - 1,RAB_FIRST_RANGE_OF_SENSING), 23, RAB_FIRST_RANGE_OF_SENSING)
+    return motor_schemas.adjust_distance_from_footbot(utils.return_rab_neighbour(RAB_POSITION_INDEX, position_in_chain - 1, RAB_SECOND_RANGE_OF_SENSING), 23)
   end
 end
 
