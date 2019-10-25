@@ -54,8 +54,8 @@ function check_ground()
       robot.motor_ground[3].value > 0.9 and robot.motor_ground[4].value > 0.9 then
     return "nest"
 
-  elseif robot.motor_ground[1].value < 0.1 or robot.motor_ground[2].value < 0.1 or
-      robot.motor_ground[3].value < 0.1 or robot.motor_ground[4].value < 0.1 then
+  elseif robot.motor_ground[1].value < 0.1 and robot.motor_ground[2].value < 0.1 and
+      robot.motor_ground[3].value < 0.1 and robot.motor_ground[4].value < 0.1 then
     return "prey"
 
   else
@@ -126,7 +126,7 @@ function explore_chain()
     local avoid_mono = motor_schemas.avoid_collisions_monosensor()
     local move_perpendicular = motor_schemas.move_perpendicular_monosensor()
 
-    local adjust_distance = motor_schemas.adjust_distance_from_footbot(max_rab, 23)
+    local adjust_distance = motor_schemas.adjust_distance_from_footbot(max_rab, 25)
     resulting_vector = vector.vec2_polar_sum(avoid_mono, move_perpendicular)
     resulting_vector = vector.vec2_polar_sum(resulting_vector, adjust_distance)
   end
@@ -139,8 +139,8 @@ function chain_link()
 
   local avoid_mono = motor_schemas.avoid_collisions_monosensor()
 
-  local adjust_distance_prev = motor_schemas.adjust_distance_from_footbot(utils.return_rab_neighbour(RAB_POSITION_INDEX, position_in_chain - 1, RAB_SECOND_RANGE_OF_SENSING), 23)
-  local adjust_distance_next = motor_schemas.adjust_distance_from_footbot(utils.return_rab_neighbour(RAB_POSITION_INDEX, position_in_chain + 1, RAB_SECOND_RANGE_OF_SENSING), 23)
+  local adjust_distance_prev = motor_schemas.adjust_distance_from_footbot(utils.return_rab_neighbour(RAB_POSITION_INDEX, position_in_chain - 1, RAB_SECOND_RANGE_OF_SENSING), 25)
+  local adjust_distance_next = motor_schemas.adjust_distance_from_footbot(utils.return_rab_neighbour(RAB_POSITION_INDEX, position_in_chain + 1, RAB_SECOND_RANGE_OF_SENSING), 25)
   local align = motor_schemas.align(position_in_chain, RAB_SECOND_RANGE_OF_SENSING)
   resulting_vector = vector.vec2_polar_sum(avoid_mono, adjust_distance_prev)
   --resulting_vector = vector.vec2_polar_sum(resulting_vector, adjust_distance_next)
@@ -157,7 +157,7 @@ function chain_tail()
     return { length = 0, angle = 0 }
   else
     local prev_rab = utils.return_rab_neighbour(RAB_POSITION_INDEX, position_in_chain - 1, RAB_SECOND_RANGE_OF_SENSING)
-    local adjust_distance = motor_schemas.adjust_distance_from_footbot(prev_rab, 23)
+    local adjust_distance = motor_schemas.adjust_distance_from_footbot(prev_rab, 25)
     local prey = utils.return_rab_neighbour(RAB_STATE_INDEX, ON_PREY, RAB_SECOND_RANGE_OF_SENSING)
     
     local direction_adjustment = nil

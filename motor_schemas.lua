@@ -24,9 +24,9 @@ function motor_schemas.move_perpendicular_monosensor()  -- TODO da fare, max.val
   local max = utils.get_sensor_with_highest_value(robot.proximity)
   if max.value > PROXIMITY_THRESHOLD then
     if max.angle > 0 then
-      return {length = max.value, angle = max.angle - math.pi / 2}
+      return {length = max.value * 1.5, angle = max.angle - math.pi / 2}
     else
-      return {length = max.value, angle = max.angle + math.pi / 2}
+      return {length = max.value * 1.5, angle = max.angle + math.pi / 2}
     end
   else
     return {length = 0, angle = 0}
@@ -67,9 +67,9 @@ end
 
 function motor_schemas.adjust_distance_from_footbot(rab, desired_distance)
   if rab.range > desired_distance + DISTANCE_TOLERANCE then
-    return { length = math.abs(rab.range - desired_distance) / 4, angle = rab.horizontal_bearing }
+    return { length = math.abs(rab.range - desired_distance) / 3, angle = rab.horizontal_bearing }
   elseif rab.range < desired_distance - DISTANCE_TOLERANCE then
-    return { length = math.abs(rab.range - desired_distance) / 4, angle = rab.horizontal_bearing + math.pi }
+    return { length = math.abs(rab.range - desired_distance) / 3, angle = rab.horizontal_bearing + math.pi }
   else
     return { length = 0, angle = 0 }
   end
@@ -86,15 +86,15 @@ function motor_schemas.align(position_in_chain, range_of_sensing)
       end
     end
   end
-  return vector.vec2_polar_sum({length = 0.5, angle = prev.horizontal_bearing}, {length = 0.5, angle = next.horizontal_bearing})
+  return vector.vec2_polar_sum({length = 1, angle = prev.horizontal_bearing}, {length = 1, angle = next.horizontal_bearing})
 end
 
 function motor_schemas.adjust_direction_to_prey(rab)
-  return { length = 0.5, angle = rab.horizontal_bearing }
+  return { length = 0.4, angle = rab.horizontal_bearing }
 end
 
 function motor_schemas.rotate_chain(rab)
-  return { length = 0.15, angle = rab.horizontal_bearing + 3 * math.pi / 2 }
+  return { length = 0.2, angle = rab.horizontal_bearing + 3 * math.pi / 2 }
 end
 
 return motor_schemas
