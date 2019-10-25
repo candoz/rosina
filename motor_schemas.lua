@@ -65,7 +65,7 @@ function motor_schemas.adjust_distance(angle, current_distance, desired_distance
   }
 end
 
-function motor_schemas.adjust_distance_from_footbot(rab, desired_distance, range_of_sensing)
+function motor_schemas.adjust_distance_from_footbot(rab, desired_distance)
   if rab.range > desired_distance + DISTANCE_TOLERANCE then
     return { length = math.abs(rab.range - desired_distance) / 4, angle = rab.horizontal_bearing }
   elseif rab.range < desired_distance - DISTANCE_TOLERANCE then
