@@ -22,6 +22,7 @@ function step()
     robot.leds.set_all_colors("green")
   elseif check_ground() == "prey" then
     robot.leds.set_all_colors("red")
+    current_state = ON_PREY
   elseif current_state == CHAIN_TAIL then
     robot.leds.set_all_colors("yellow")
   elseif current_state == CHAIN_LINK then
@@ -155,7 +156,13 @@ function chain_tail()
     current_state = CHAIN_LINK
     return { length = 0, angle = 0 }
   else
-    return motor_schemas.adjust_distance_from_footbot(utils.return_rab_neighbour(RAB_POSITION_INDEX, position_in_chain - 1, RAB_SECOND_RANGE_OF_SENSING), 23)
+    local adjust_distance = motor_schemas.adjust_distance_from_footbot(utils.return_rab_neighbour(RAB_POSITION_INDEX, position_in_chain - 1, RAB_SECOND_RANGE_OF_SENSING), 23)
+    local prey = utils.return_rab_neighbour(RAB_STATE_INDEX, ON_PREY, RAB_SECOND_RANGE_OF_SENSING)
+    if prey ~= nil then
+      return vector.vec2_polar_sum(adjust_distance, motor_schemas.adjust_distance_from_footbot(prey, 23))
+    else
+      return adjust_distance
+    end
   end
 end
 
