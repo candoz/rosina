@@ -89,14 +89,21 @@ function search()
 end
 
 function on_nest()
-  robot.range_and_bearing.set_data(1, ON_NEST)
-  robot.range_and_bearing.set_data(2, position_in_chain)
+  emit_chain_info()
+  local tail_second = utils.check_neighbour_value(RAB_STATE_INDEX, CHAIN_TAIL, RAB_SECOND_RANGE_OF_SENSING)
+  local link_second = utils.check_neighbour_value(RAB_STATE_INDEX, CHAIN_LINK, RAB_SECOND_RANGE_OF_SENSING)
+  if tail_second or link_second then
+    robot.range_and_bearing.set_data(3, 1)
+  else
+    robot.range_and_bearing.set_data(3, 0)
+  end
   return {length = 0, angle = 0}
 end
 
 function explore_chain()
   local resulting_vector = {length = 0, angle = 0}
-  local nest_first = utils.check_neighbour_value(RAB_STATE_INDEX, ON_NEST, RAB_FIRST_RANGE_OF_SENSING)
+  local nest_first = utils.return_rab_neighbour(RAB_STATE_INDEX, ON_NEST, RAB_FIRST_RANGE_OF_SENSING)
+
   local nest_second = utils.check_neighbour_value(RAB_STATE_INDEX, ON_NEST, RAB_SECOND_RANGE_OF_SENSING)
   local tail_first = utils.check_neighbour_value(RAB_STATE_INDEX, CHAIN_TAIL, RAB_FIRST_RANGE_OF_SENSING)
   local tail_second = utils.check_neighbour_value(RAB_STATE_INDEX, CHAIN_TAIL, RAB_SECOND_RANGE_OF_SENSING)
@@ -105,9 +112,8 @@ function explore_chain()
   local max_rab = utils.return_max_rab_neighbour(RAB_POSITION_INDEX, RAB_FIRST_RANGE_OF_SENSING)
   
   if max_rab == nil then
-    log("entraaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa")
     current_state = SEARCH
-  elseif (nest_first == true and tail_second == false and link_second == false) or
+  elseif (nest_first ~= nil and nest_first.data[3] == 0 and tail_second == false and link_second == false) or
           (tail_first == true and nest_second == false and link_second == false) then
     position_in_chain = max_rab.data[2] + 1
     current_state = CHAIN_TAIL
@@ -128,8 +134,7 @@ end
 
 function chain_link()
   local resulting_vector = {length = 0, angle = 0}
-  robot.range_and_bearing.set_data(RAB_STATE_INDEX, CHAIN_LINK)
-  robot.range_and_bearing.set_data(RAB_POSITION_INDEX, position_in_chain)
+  emit_chain_info()
 
   local avoid_mono = motor_schemas.avoid_collisions_monosensor()
 
@@ -144,8 +149,7 @@ function chain_link()
 end
 
 function chain_tail()
-  robot.range_and_bearing.set_data(RAB_STATE_INDEX, CHAIN_TAIL)
-  robot.range_and_bearing.set_data(RAB_POSITION_INDEX, position_in_chain)
+  emit_chain_info()
   local tail = utils.return_rab_neighbour(RAB_STATE_INDEX, CHAIN_TAIL, RAB_FIRST_RANGE_OF_SENSING)
   if tail ~= nil and tail.data[2] == position_in_chain + 1 then
     current_state = CHAIN_LINK
@@ -156,6 +160,11 @@ function chain_tail()
 end
 
 function on_prey()
-  robot.range_and_bearing.set_data(1, ON_PREY)
+  robot.range_and_bearing.set_data(RAB_STATE_INDEX, current_state)
   return {length = 0, angle = 0}
+end
+
+function emit_chain_info()
+  robot.range_and_bearing.set_data(RAB_STATE_INDEX, current_state)
+  robot.range_and_bearing.set_data(RAB_POSITION_INDEX, position_in_chain)
 end
