@@ -156,19 +156,23 @@ function chain_tail()
     current_state = CHAIN_LINK
     return { length = 0, angle = 0 }
   else
-    local adjust_distance = motor_schemas.adjust_distance_from_footbot(utils.return_rab_neighbour(RAB_POSITION_INDEX, position_in_chain - 1, RAB_SECOND_RANGE_OF_SENSING), 23)
-    local prey = utils.return_rab_neighbour(RAB_STATE_INDEX, ON_PREY, 300)
+    local prev_rab = utils.return_rab_neighbour(RAB_POSITION_INDEX, position_in_chain - 1, RAB_SECOND_RANGE_OF_SENSING)
+    local adjust_distance = motor_schemas.adjust_distance_from_footbot(prev_rab, 23)
+    local prey = utils.return_rab_neighbour(RAB_STATE_INDEX, ON_PREY, RAB_SECOND_RANGE_OF_SENSING)
+    
+    local direction_adjustment = nil
     if prey ~= nil then
-      return vector.vec2_polar_sum(adjust_distance, motor_schemas.adjust_direction_to_prey(prey))
+      direction_adjustment = motor_schemas.adjust_direction_to_prey(prey)
     else
-      return adjust_distance
+      direction_adjustment = motor_schemas.rotate_chain(prev_rab)
     end
+    return vector.vec2_polar_sum(adjust_distance, direction_adjustment)
   end
 end
 
 function on_prey()
   robot.range_and_bearing.set_data(RAB_STATE_INDEX, current_state)
-  return {length = 0, angle = 0}
+  return { length = 0, angle = 0 }
 end
 
 function emit_chain_info()

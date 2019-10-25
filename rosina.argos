@@ -64,7 +64,7 @@
   </media>
 
   <visualization>
-    <qt-opengl lua_editor="true">
+    <qt-opengl lua_editor="false">
       <camera>
         <placement idx="0" position="0,-2,4" look_at="0,0,-0.5" lens_focal_length="20" />
       </camera>
