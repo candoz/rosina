@@ -157,9 +157,9 @@ function chain_tail()
     return { length = 0, angle = 0 }
   else
     local adjust_distance = motor_schemas.adjust_distance_from_footbot(utils.return_rab_neighbour(RAB_POSITION_INDEX, position_in_chain - 1, RAB_SECOND_RANGE_OF_SENSING), 23)
-    local prey = utils.return_rab_neighbour(RAB_STATE_INDEX, ON_PREY, RAB_SECOND_RANGE_OF_SENSING)
+    local prey = utils.return_rab_neighbour(RAB_STATE_INDEX, ON_PREY, 300)
     if prey ~= nil then
-      return vector.vec2_polar_sum(adjust_distance, motor_schemas.adjust_distance_from_footbot(prey, 23))
+      return vector.vec2_polar_sum(adjust_distance, motor_schemas.adjust_direction_to_prey(prey))
     else
       return adjust_distance
     end
