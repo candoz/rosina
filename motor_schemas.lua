@@ -24,9 +24,9 @@ function motor_schemas.move_perpendicular_monosensor()  -- TODO da fare, max.val
   local max = utils.get_sensor_with_highest_value(robot.proximity)
   if max.value > PROXIMITY_THRESHOLD then
     if max.angle > 0 then
-      return {length = max.value * 1.5, angle = max.angle - math.pi / 2}
+      return {length = 0.7, angle = max.angle - math.pi / 2}
     else
-      return {length = max.value * 1.5, angle = max.angle + math.pi / 2}
+      return {length = 0.7, angle = max.angle + math.pi / 2}
     end
   else
     return {length = 0, angle = 0}
@@ -86,7 +86,7 @@ function motor_schemas.align(position_in_chain, range_of_sensing)
       end
     end
   end
-  return vector.vec2_polar_sum({length = 1, angle = prev.horizontal_bearing}, {length = 1, angle = next.horizontal_bearing})
+  return vector.vec2_polar_sum({length = 1.5, angle = prev.horizontal_bearing}, {length = 1.5, angle = next.horizontal_bearing})
 end
 
 function motor_schemas.adjust_direction_to_prey(rab)

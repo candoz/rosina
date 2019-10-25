@@ -80,11 +80,9 @@ function search()
     local random = motor_schemas.move_random()
     local avoid_mono = motor_schemas.avoid_collisions_monosensor()
     local avoid_multi = motor_schemas.avoid_collisions_multisensor()
-    local move_perpendicular = motor_schemas.move_perpendicular_monosensor()
     resulting_vector = vector.vec2_polar_sum(straight, random)
     resulting_vector = vector.vec2_polar_sum(resulting_vector, avoid_mono)
     resulting_vector = vector.vec2_polar_sum(resulting_vector, avoid_multi)
-    resulting_vector = vector.vec2_polar_sum(resulting_vector, move_perpendicular)
   end
   return resulting_vector
 end
