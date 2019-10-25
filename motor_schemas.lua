@@ -90,7 +90,7 @@ function motor_schemas.align(position_in_chain, range_of_sensing)
 end
 
 function motor_schemas.adjust_direction_to_prey(rab)
-  return { length = 0.5, angle rab.horizontal_bearing }
+  return { length = 0.5, angle = rab.horizontal_bearing }
 end
 
 return motor_schemas
