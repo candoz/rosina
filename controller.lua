@@ -102,10 +102,15 @@ function explore_chain()
   local tail_second = utils.check_neighbour_value(RAB_STATE_INDEX, CHAIN_TAIL, RAB_SECOND_RANGE_OF_SENSING)
   local link_first = utils.check_neighbour_value(RAB_STATE_INDEX, CHAIN_LINK, RAB_FIRST_RANGE_OF_SENSING)
   local link_second = utils.check_neighbour_value(RAB_STATE_INDEX, CHAIN_LINK, RAB_SECOND_RANGE_OF_SENSING)
+  local max_rab = utils.return_max_rab_neighbour(RAB_POSITION_INDEX, RAB_FIRST_RANGE_OF_SENSING)
   
-  if nest_first == true and tail_second == false and link_second == false then
+  if max_rab == nil then
+    log("entraaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa")
+    current_state = SEARCH
+  elseif nest_first == true and tail_second == false and link_second == false then
     position_in_chain = utils.return_rab_neighbour(RAB_STATE_INDEX, ON_NEST, RAB_FIRST_RANGE_OF_SENSING).data[RAB_POSITION_INDEX] + 1
     current_state = CHAIN_TAIL
+    log("entraaaaaaaa")
   elseif tail_first == true and nest_second == false and link_second == false then
     position_in_chain = utils.return_rab_neighbour(RAB_STATE_INDEX, CHAIN_TAIL, RAB_FIRST_RANGE_OF_SENSING).data[RAB_POSITION_INDEX] + 1
     current_state = CHAIN_TAIL
@@ -116,9 +121,8 @@ function explore_chain()
 
     local avoid_mono = motor_schemas.avoid_collisions_monosensor()
     local move_perpendicular = motor_schemas.move_perpendicular_monosensor()
-    local max_rab = utils.return_max_rab_neighbour(RAB_POSITION_INDEX, RAB_FIRST_RANGE_OF_SENSING)
-    log("debug " .. max_rab.range)
-    local adjust_distance = motor_schemas.adjust_distance_from_footbot(max_rab, 25, RAB_FIRST_RANGE_OF_SENSING)
+
+    local adjust_distance = motor_schemas.adjust_distance_from_footbot(max_rab, 23, RAB_FIRST_RANGE_OF_SENSING)
     resulting_vector = vector.vec2_polar_sum(avoid_mono, move_perpendicular)
     resulting_vector = vector.vec2_polar_sum(resulting_vector, adjust_distance)
   end
@@ -153,7 +157,7 @@ function chain_tail()
     current_state = CHAIN_LINK
     return { length = 0, angle = 0 }
   else
-    return motor_schemas.adjust_distance_from_footbot(utils.return_rab_neighbour(RAB_POSITION_INDEX, position_in_chain - 1,RAB_FIRST_RANGE_OF_SENSING), 25, RAB_FIRST_RANGE_OF_SENSING)
+    return motor_schemas.adjust_distance_from_footbot(utils.return_rab_neighbour(RAB_POSITION_INDEX, position_in_chain - 1,RAB_FIRST_RANGE_OF_SENSING), 23, RAB_FIRST_RANGE_OF_SENSING)
   end
 end
 
