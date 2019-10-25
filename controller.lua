@@ -9,7 +9,7 @@ local RAB_FIRST_RANGE_OF_SENSING, RAB_SECOND_RANGE_OF_SENSING = 30, 60
 local RAB_STATE_INDEX, RAB_POSITION_INDEX = 1, 2  -- POSITION in chain
 
 local current_state = SEARCH
-local position_in_chain = -1
+local position_in_chain = 0
 local motor_vector = {length = 0, angle = 0}
 
 function init()
@@ -72,7 +72,7 @@ function search()
   if nest == true or tail == true or link == true then
     current_state = EXPLORE_CHAIN
   elseif check_ground() == "nest" then
-    position_in_chain = 0
+    position_in_chain = 1
     current_state = ON_NEST
   else
     local straight = motor_schemas.move_straight()
