@@ -60,7 +60,7 @@ function search()
   local link = utils.check_neighbour_value(RAB_STATE_INDEX, CHAIN_LINK, RAB_FIRST_RANGE_OF_SENSING)
   local ground = check_ground()
   
-  if nest == true or tail == true or link == true then
+  if nest or tail or link then
     current_state = EXPLORE_CHAIN
   elseif ground == "nest" then
     position_in_chain = 1
@@ -107,8 +107,8 @@ function explore_chain()
 
   if max_rab == nil then
     current_state = SEARCH
-  elseif (nest_first ~= nil and nest_first.data[3] == 0 and tail_second == false and link_second == false) or
-          (tail_first == true and nest_second == false and link_second == false) then
+  elseif (nest_first ~= nil and nest_first.data[3] == 0 and not tail_second and not link_second) or
+          (tail_first and not nest_second and not link_second) then
     position_in_chain = max_rab.data[2] + 1
     current_state = CHAIN_TAIL
   else
