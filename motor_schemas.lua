@@ -3,8 +3,7 @@ utils = require "utils"
 local motor_schemas = {}
 
 local PROXIMITY_THRESHOLD = 0.1
-local DISTANCE_TOLERANCE = 0.5  -- to avoidoscillating behaviour in Adjust_distance motor schema
-local RAB_STATE_INDEX, RAB_POSITION_INDEX = 1, 2
+local DISTANCE_TOLERANCE = 0.5  -- to avoid oscillating behaviour in Adjust_distance motor schema
 
 function motor_schemas.move_straight()
   return {
@@ -74,13 +73,13 @@ function motor_schemas.adjust_distance_from_footbot(rab, desired_distance)
   end
 end
 
-function motor_schemas.align(position_in_chain, range_of_sensing)
+function motor_schemas.align(index, position_in_chain, range_of_sensing)
   local prev, next = nil, nil
   for _, rab in ipairs(robot.range_and_bearing) do
     if rab.range < range_of_sensing then
-      if rab.data[2] == position_in_chain - 1 then
+      if rab.data[index] == position_in_chain - 1 then
         prev = rab
-      elseif rab.data[2] == position_in_chain + 1 then
+      elseif rab.data[index] == position_in_chain + 1 then
         next = rab
       end
     end

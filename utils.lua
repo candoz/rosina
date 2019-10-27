@@ -26,7 +26,27 @@ function utils.check_neighbour_value(index, value, range_of_sensing)
   end
 end
 
--- Returns the first rab with the given value at data[index] under the range_of_sensing
+-- Returns the first existing rab under the range_of_sensing that satisfies f(rab.data)
+-- function utils.return_rab_neighbour(range_of_sensing, f)
+--   for _, rab in ipairs(robot.range_and_bearing) do
+--     if rab.range < range_of_sensing and f(rab.data) then
+--       return rab
+--     end
+--   end
+--   return nil
+-- end
+
+-- Returns the first existing rab with data[index] > 0 under the range_of_sensing
+function utils.return_rab_neighboura(index, range_of_sensing)
+  for _, rab in ipairs(robot.range_and_bearing) do
+    if rab.range < range_of_sensing and rab.data[index] > 0 then
+      return rab
+    end
+  end
+  return nil
+end
+
+-- Returns the first existing rab with the given value at data[index] under the range_of_sensing
 function utils.return_rab_neighbour(index, value, range_of_sensing)
   for _, rab in ipairs(robot.range_and_bearing) do
     if rab.range < range_of_sensing and rab.data[index] == value then
@@ -36,9 +56,9 @@ function utils.return_rab_neighbour(index, value, range_of_sensing)
   return nil
 end
 
--- TODO commento
+-- Returns the rab with the highest value at data[index] under the range_of_sensing
 function utils.return_max_rab_neighbour(index, range_of_sensing)
-  local max, max_rab = -1, nil
+  local max, max_rab = 0, nil
   for _, rab in ipairs(robot.range_and_bearing) do
     if rab.range < range_of_sensing and max < rab.data[index] then
       max = rab.data[index]
@@ -46,6 +66,18 @@ function utils.return_max_rab_neighbour(index, range_of_sensing)
     end
   end
   return max_rab
+end
+
+-- Returns the rab with the lowest value at data[index] under the range_of_sensing
+function utils.return_min_rab_neighbour(index, range_of_sensing)
+  local min, min_rab = 9999, nil
+  for _, rab in ipairs(robot.range_and_bearing) do
+    if rab.range < range_of_sensing and min > rab.data[index] then
+      min = rab.data[index]
+      min_rab = rab
+    end
+  end
+  return min_rab
 end
 
 return utils
