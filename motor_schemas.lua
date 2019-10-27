@@ -50,17 +50,9 @@ function motor_schemas.avoid_collisions_multisensor()
     end
   end
   if counter ~= 0 then
-    v.length = v.length / counter   -- MaybeTODO another possible solution: take max value
+    v.length = v.length / counter
   end
   return v
-end
-
-function motor_schemas.adjust_distance(angle, current_distance, desired_distance)
-  
-
-  return {
-    --TODO
-  }
 end
 
 function motor_schemas.adjust_distance_from_footbot(rab, desired_distance)
