@@ -94,72 +94,41 @@ function on_nest()
   return {length = 0, angle = 0}
 end
 
--- function explore_chain()
---   robot.leds.set_all_colors("black")
---   local resulting_vector = {length = 0, angle = 0}
---   local sensing_a_completed_chain = utils.return_rab_neighboura(RAB_PREY_POSITION_INDEX, RANGE_OF_SENSING_2) ~= nil
---   local max_rab = utils.return_rab_neighboura(RAB_POSITION_INDEX, RANGE_OF_SENSING_2)
-
---   if max_rab == nil or sensing_a_completed_chain then
---     current_state = SEARCH -- lost the chain while exploring it
-  
---   else
---     -- NEST bots around me?
---     local close_nest_bot = utils.return_rab_neighbour(RAB_STATE_INDEX, ON_NEST, RANGE_OF_SENSING_1)
---     local sensing_a_close_nest_bot = close_nest_bot ~= nil
---     local sensing_a_nest_bot = utils.return_rab_neighbour(RAB_STATE_INDEX, ON_NEST, RANGE_OF_SENSING_2) ~= nil
---     -- LINK bots around me?
---     local sensing_a_close_link_bot = utils.return_rab_neighbour(RAB_STATE_INDEX, CHAIN_LINK, RANGE_OF_SENSING_1) ~= nil
---     local sensing_a_link_bot = utils.return_rab_neighbour(RAB_STATE_INDEX, CHAIN_LINK, RANGE_OF_SENSING_2) ~= nil
---     -- TAIL bots around me?
---     local sensing_a_close_tail_bot = utils.return_rab_neighbour(RAB_STATE_INDEX, CHAIN_TAIL, RANGE_OF_SENSING_1) ~= nil
---     local sensing_a_tail_bot = utils.return_rab_neighbour(RAB_STATE_INDEX, CHAIN_TAIL, RANGE_OF_SENSING_2) ~= nil
-
---     if (sensing_a_close_nest_bot and close_nest_bot.data[RAB_NUMBER_OF_CHAINS_INDEX] == 0 and not sensing_a_link_bot and not sensing_a_tail_bot) or
---         (sensing_a_close_tail_bot and not sensing_a_link_bot and not sensing_a_nest_bot) then
---       position_in_chain = max_rab.data[RAB_POSITION_INDEX] + 1 -- I have now the highest position in the chain
---       current_state = CHAIN_TAIL
-
---     else -- keep exploring the chain
---       local non_max_rab = utils.return_rab_neighbour(RAB_POSITION_INDEX, max_rab.data[RAB_POSITION_INDEX] - 1, RANGE_OF_SENSING_2)
-
---       local avoid_mono = motor_schemas.avoid_collisions_monosensor()
---       local move_perpendicular = motor_schemas.circumnavigate_towards_the_tail(max_rab, non_max_rab)
---       local adjust_distance = motor_schemas.adjust_distance_from_footbot(max_rab, EXPLORING_DISTANCE)
---       resulting_vector = vector.vec2_polar_sum(avoid_mono, move_perpendicular)
---       resulting_vector = vector.vec2_polar_sum(resulting_vector, adjust_distance)
---     end
---   end
---   return resulting_vector
--- end
-
 function explore_chain()
   robot.leds.set_all_colors("black")
   local resulting_vector = {length = 0, angle = 0}
-  local nest_first = utils.return_rab_neighbour(RAB_STATE_INDEX, ON_NEST, RANGE_OF_SENSING_1)
-
-  local nest_second = utils.check_neighbour_value(RAB_STATE_INDEX, ON_NEST, RANGE_OF_SENSING_2)
-  local tail_first = utils.check_neighbour_value(RAB_STATE_INDEX, CHAIN_TAIL, RANGE_OF_SENSING_1)
-  local tail_second = utils.check_neighbour_value(RAB_STATE_INDEX, CHAIN_TAIL, RANGE_OF_SENSING_2)
-  local link_first = utils.check_neighbour_value(RAB_STATE_INDEX, CHAIN_LINK, RANGE_OF_SENSING_1)
-  local link_second = utils.check_neighbour_value(RAB_STATE_INDEX, CHAIN_LINK, RANGE_OF_SENSING_2)
+  local sensing_a_completed_chain = utils.return_rab_neighboura(RAB_PREY_POSITION_INDEX, RANGE_OF_SENSING_2) ~= nil
   local max_rab = utils.return_max_rab_neighbour(RAB_POSITION_INDEX, RANGE_OF_SENSING_2)
-  local non_max_rab = utils.return_rab_neighbour(RAB_POSITION_INDEX, max_rab.data[RAB_POSITION_INDEX] - 1, RANGE_OF_SENSING_2)
-  local prey = utils.return_rab_neighboura(RAB_PREY_POSITION_INDEX, RANGE_OF_SENSING_2)
 
-  if prey ~= nil or max_rab == nil then
-    current_state = SEARCH
-  elseif (nest_first ~= nil and nest_first.data[RAB_NUMBER_OF_CHAINS_INDEX] == 0 and not tail_second and not link_second) or
-          (tail_first and not nest_second and not link_second) then
-    position_in_chain = max_rab.data[RAB_POSITION_INDEX] + 1
-    current_state = CHAIN_TAIL
+  if max_rab == nil or sensing_a_completed_chain then
+    current_state = SEARCH -- lost the chain while exploring it
+  
   else
-    local avoid_mono = motor_schemas.avoid_collisions_monosensor()
-    local move_perpendicular = motor_schemas.circumnavigate_towards_the_tail(max_rab, non_max_rab)
+    -- NEST bots around me?
+    local close_nest_bot = utils.return_rab_neighbour(RAB_STATE_INDEX, ON_NEST, RANGE_OF_SENSING_1)
+    local sensing_a_close_nest_bot = close_nest_bot ~= nil
+    local sensing_a_nest_bot = utils.return_rab_neighbour(RAB_STATE_INDEX, ON_NEST, RANGE_OF_SENSING_2) ~= nil
+    -- LINK bots around me?
+    local sensing_a_close_link_bot = utils.return_rab_neighbour(RAB_STATE_INDEX, CHAIN_LINK, RANGE_OF_SENSING_1) ~= nil
+    local sensing_a_link_bot = utils.return_rab_neighbour(RAB_STATE_INDEX, CHAIN_LINK, RANGE_OF_SENSING_2) ~= nil
+    -- TAIL bots around me?
+    local sensing_a_close_tail_bot = utils.return_rab_neighbour(RAB_STATE_INDEX, CHAIN_TAIL, RANGE_OF_SENSING_1) ~= nil
+    local sensing_a_tail_bot = utils.return_rab_neighbour(RAB_STATE_INDEX, CHAIN_TAIL, RANGE_OF_SENSING_2) ~= nil
 
-    local adjust_distance = motor_schemas.adjust_distance_from_footbot(max_rab, 25)
-    resulting_vector = vector.vec2_polar_sum(avoid_mono, move_perpendicular)
-    resulting_vector = vector.vec2_polar_sum(resulting_vector, adjust_distance)
+    if (sensing_a_close_nest_bot and close_nest_bot.data[RAB_NUMBER_OF_CHAINS_INDEX] == 0 and not sensing_a_link_bot and not sensing_a_tail_bot) or
+        (sensing_a_close_tail_bot and not sensing_a_link_bot and not sensing_a_nest_bot) then
+      position_in_chain = max_rab.data[RAB_POSITION_INDEX] + 1 -- I have now the highest position in the chain
+      current_state = CHAIN_TAIL
+
+    else -- keep exploring the chain
+      local non_max_rab = utils.return_rab_neighbour(RAB_POSITION_INDEX, max_rab.data[RAB_POSITION_INDEX] - 1, RANGE_OF_SENSING_2)
+
+      local avoid_mono = motor_schemas.avoid_collisions_monosensor()
+      local move_perpendicular = motor_schemas.circumnavigate_towards_the_tail(max_rab, non_max_rab)
+      local adjust_distance = motor_schemas.adjust_distance_from_footbot(max_rab, EXPLORING_DISTANCE)
+      resulting_vector = vector.vec2_polar_sum(avoid_mono, move_perpendicular)
+      resulting_vector = vector.vec2_polar_sum(resulting_vector, adjust_distance)
+    end
   end
   return resulting_vector
 end
