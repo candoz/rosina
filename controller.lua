@@ -98,7 +98,7 @@ function explore_chain()
   robot.leds.set_all_colors("black")
   local resulting_vector = {length = 0, angle = 0}
   local sensing_a_completed_chain = utils.return_rab_neighboura(RAB_PREY_POSITION_INDEX, RANGE_OF_SENSING_2) ~= nil
-  local max_rab = utils.return_max_rab_neighbour(RAB_POSITION_INDEX, RANGE_OF_SENSING_2)
+  local max_rab = utils.return_max_rab_neighbour(RAB_POSITION_INDEX, RANGE_OF_SENSING_1)
 
   if max_rab == nil or sensing_a_completed_chain then
     current_state = SEARCH -- lost the chain while exploring it
@@ -121,7 +121,7 @@ function explore_chain()
       current_state = CHAIN_TAIL
 
     else -- keep exploring the chain
-      local non_max_rab = utils.return_rab_neighbour(RAB_POSITION_INDEX, max_rab.data[RAB_POSITION_INDEX] - 1, RANGE_OF_SENSING_2)
+      local non_max_rab = utils.return_rab_neighbour(RAB_POSITION_INDEX, max_rab.data[RAB_POSITION_INDEX] - 1, RANGE_OF_SENSING_1)
 
       local avoid_mono = motor_schemas.avoid_collisions_monosensor()
       local move_perpendicular = motor_schemas.circumnavigate_towards_the_tail(max_rab, non_max_rab)
