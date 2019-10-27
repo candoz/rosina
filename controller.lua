@@ -18,18 +18,6 @@ end
 
 function step()
   log(robot.id .. " " .. position_in_chain .. " " .. current_state)
-  if check_ground() == "nest" then
-    robot.leds.set_all_colors("green")
-  elseif check_ground() == "prey" then
-    robot.leds.set_all_colors("red")
-    current_state = ON_PREY
-  elseif current_state == CHAIN_TAIL then
-    robot.leds.set_all_colors("yellow")
-  elseif current_state == CHAIN_LINK then
-    robot.leds.set_all_colors("white")
-  else
-    robot.leds.set_all_colors("black")
-  end
 
   local c_tbl = {
       [SEARCH] = search,
@@ -65,16 +53,20 @@ function check_ground()
 end
 
 function search()
+  robot.leds.set_all_colors("black")
   local resulting_vector = {length = 0, angle = 0}
   local nest = utils.check_neighbour_value(RAB_STATE_INDEX, ON_NEST, RAB_FIRST_RANGE_OF_SENSING)
   local tail = utils.check_neighbour_value(RAB_STATE_INDEX, CHAIN_TAIL, RAB_FIRST_RANGE_OF_SENSING)
   local link = utils.check_neighbour_value(RAB_STATE_INDEX, CHAIN_LINK, RAB_FIRST_RANGE_OF_SENSING)
+  local ground = check_ground()
   
   if nest == true or tail == true or link == true then
     current_state = EXPLORE_CHAIN
-  elseif check_ground() == "nest" then
+  elseif ground == "nest" then
     position_in_chain = 1
     current_state = ON_NEST
+  elseif ground == "prey" then
+    current_state = ON_PREY
   else
     local straight = motor_schemas.move_straight()
     local random = motor_schemas.move_random()
@@ -88,6 +80,7 @@ function search()
 end
 
 function on_nest()
+  robot.leds.set_all_colors("green")
   emit_chain_info()
   local tail_second = utils.check_neighbour_value(RAB_STATE_INDEX, CHAIN_TAIL, RAB_SECOND_RANGE_OF_SENSING)
   local link_second = utils.check_neighbour_value(RAB_STATE_INDEX, CHAIN_LINK, RAB_SECOND_RANGE_OF_SENSING)
@@ -100,6 +93,7 @@ function on_nest()
 end
 
 function explore_chain()
+  robot.leds.set_all_colors("black")
   local resulting_vector = {length = 0, angle = 0}
   local nest_first = utils.return_rab_neighbour(RAB_STATE_INDEX, ON_NEST, RAB_FIRST_RANGE_OF_SENSING)
 
@@ -108,7 +102,7 @@ function explore_chain()
   local tail_second = utils.check_neighbour_value(RAB_STATE_INDEX, CHAIN_TAIL, RAB_SECOND_RANGE_OF_SENSING)
   local link_first = utils.check_neighbour_value(RAB_STATE_INDEX, CHAIN_LINK, RAB_FIRST_RANGE_OF_SENSING)
   local link_second = utils.check_neighbour_value(RAB_STATE_INDEX, CHAIN_LINK, RAB_SECOND_RANGE_OF_SENSING)
-  local max_rab = utils.return_max_rab_neighbour(RAB_POSITION_INDEX, RAB_FIRST_RANGE_OF_SENSING)
+  local max_rab = utils.return_max_rab_neighbour(RAB_POSITION_INDEX, RAB_SECOND_RANGE_OF_SENSING)
   local non_max_rab = utils.return_rab_neighbour(RAB_POSITION_INDEX, max_rab.data[RAB_POSITION_INDEX] - 1, RAB_SECOND_RANGE_OF_SENSING)
 
   if max_rab == nil then
@@ -129,6 +123,7 @@ function explore_chain()
 end
 
 function chain_link()
+  robot.leds.set_all_colors("white")
   local resulting_vector = {length = 0, angle = 0}
   emit_chain_info()
 
@@ -145,6 +140,7 @@ function chain_link()
 end
 
 function chain_tail()
+  robot.leds.set_all_colors("yellow")
   emit_chain_info()
   local tail = utils.return_rab_neighbour(RAB_STATE_INDEX, CHAIN_TAIL, RAB_FIRST_RANGE_OF_SENSING)
   if tail ~= nil and tail.data[2] == position_in_chain + 1 then
@@ -166,6 +162,7 @@ function chain_tail()
 end
 
 function on_prey()
+  robot.leds.set_all_colors("red")
   robot.range_and_bearing.set_data(RAB_STATE_INDEX, current_state)
   return { length = 0, angle = 0 }
 end
