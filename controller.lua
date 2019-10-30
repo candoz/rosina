@@ -250,3 +250,11 @@ function emit_chain_info()
     end
   end
 end
+
+function reset()
+  local current_state = SEARCH
+  local position_in_chain = 0
+end
+
+function destroy()
+end
