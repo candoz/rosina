@@ -19,40 +19,40 @@ function motor_schemas.move_random()
   }
 end
 
-function motor_schemas.circumnavigate_towards_the_tail(max_rab, non_max_rab)
-  if non_max_rab ~= nil then
-    return vector.vec2_polar_sum({ length = max_rab.range / 30, angle = max_rab.horizontal_bearing }, { length = non_max_rab.range / 30, angle = non_max_rab.horizontal_bearing + math.pi })
+function motor_schemas.follow_chain_direction(first_rab, second_rab)
+  return vector.vec2_polar_sum({ length = first_rab.range / 30, angle = first_rab.horizontal_bearing }, { length = second_rab.range / 30, angle = second_rab.horizontal_bearing + math.pi })
+end
+
+function motor_schemas.move_perpendicular_to_rab(rab)
+  if rab.horizontal_bearing > 0 then
+    return {length = 0.7, angle = rab.horizontal_bearing - math.pi / 2}
   else
-    if max_rab.horizontal_bearing > 0 then
-      return {length = 0.7, angle = max_rab.horizontal_bearing - math.pi / 2}
-    else
-      return {length = 0.7, angle = max_rab.horizontal_bearing + math.pi / 2}
-    end
+    return {length = 0.7, angle = rab.horizontal_bearing + math.pi / 2}
   end
 end
 
 function motor_schemas.avoid_collisions_monosensor()
-  local max = utils.get_sensor_with_highest_value(robot.proximity)
-	if max.value > PROXIMITY_THRESHOLD then
-    return {length = max.value, angle = max.angle + math.pi}
+  local max_proximity_sensor = utils.get_sensor_with_highest_value(robot.proximity)
+	if max_proximity_sensor.value > PROXIMITY_THRESHOLD then
+    return {length = max_proximity_sensor.value, angle = max_proximity_sensor.angle + math.pi}
   else
     return {length = 0, angle = 0}
 	end
 end
 
 function motor_schemas.avoid_collisions_multisensor()
-  local v = { length = 0, angle = 0 }
+  local resulting_vector = { length = 0, angle = 0 }
   local counter = 0
   for i = 1, 24 do
     if robot.proximity[i].value > PROXIMITY_THRESHOLD then
-      v = vector.vec2_polar_sum(v, {length = robot.proximity[i].value, angle = robot.proximity[i].angle + math.pi})
+      resulting_vector = vector.vec2_polar_sum(resulting_vector, {length = robot.proximity[i].value, angle = robot.proximity[i].angle + math.pi})
       counter = counter + 1
     end
   end
   if counter ~= 0 then
-    v.length = v.length / counter
+    resulting_vector.length = resulting_vector.length / counter
   end
-  return v
+  return resulting_vector
 end
 
 function motor_schemas.adjust_distance_from_footbot(rab, desired_distance)
