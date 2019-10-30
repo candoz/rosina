@@ -247,15 +247,7 @@ function chain_tail()
         current_state = CHAIN_LINK
       else
         local adjust_distance = motor_schemas.adjust_distance_from_footbot(prev_bot, CHAIN_BOTS_DISTANCE)
-        local prey_bot = utils.return_rab_neighbour(RANGE_OF_SENSING_2, function(data) return data[RAB_STATE_INDEX] == ON_PREY end)
-        local sensing_prey_bot = prey_bot ~= nil
-        
-        local direction_adjustment = nil
-        if sensing_prey_bot then
-          direction_adjustment = motor_schemas.adjust_direction_to_prey(prey_bot)
-        else
-          direction_adjustment = motor_schemas.rotate_chain(prev_bot)
-        end
+        local direction_adjustment = motor_schemas.rotate_chain(prev_bot)
         resulting_vector = vector.vec2_polar_sum(adjust_distance, direction_adjustment)
       end
     end
