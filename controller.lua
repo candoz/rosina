@@ -193,38 +193,6 @@ function chain_link()
   return resulting_vector
 end
 
--- function chain_tail()
---   robot.leds.set_all_colors("yellow")
---   emit_chain_info()
---   local resulting_vector = {length = 0, angle = 0}
-
---   local tail = utils.return_rab_neighbour(RANGE_OF_SENSING_1, function(data) return data[RAB_STATE_INDEX] == CHAIN_TAIL end)
---   local prey_position = utils.return_rab_neighbour(RANGE_OF_SENSING_2, function(data) return data[RAB_PREY_POSITION_INDEX] > 0 end)
---   local prev_rab = utils.return_rab_neighbour(RANGE_OF_SENSING_2, function(data) return data[RAB_POSITION_INDEX] == position_in_chain - 1 end)
-
---   if check_ground() == "prey" then
---     current_state = ON_PREY
---   elseif prev_rab == nil or (prey_position ~= nil and position_in_chain > prey_position.data[RAB_PREY_POSITION_INDEX]) then
---     position_in_chain = 0
---     current_state = SEARCH
---   elseif tail ~= nil and tail.data[RAB_POSITION_INDEX] == position_in_chain + 1 then
---     current_state = CHAIN_LINK
---   else
---     local adjust_distance = motor_schemas.adjust_distance_from_footbot(prev_rab, CHAIN_BOTS_DISTANCE)
---     local prey = utils.return_rab_neighbour(RANGE_OF_SENSING_2, function(data) return data[RAB_STATE_INDEX] == ON_PREY end)
-    
---     local direction_adjustment = nil
---     if prey ~= nil then
---       direction_adjustment = motor_schemas.adjust_direction_to_prey(prey)
---     else
---       direction_adjustment = motor_schemas.rotate_chain(prev_rab)
---     end
---     resulting_vector = vector.vec2_polar_sum(adjust_distance, direction_adjustment)
---   end
-
---   return resulting_vector
--- end
-
 function chain_tail()
   robot.leds.set_all_colors("yellow")
   emit_chain_info()
