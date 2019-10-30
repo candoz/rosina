@@ -41,7 +41,6 @@ function step()
   end
   
   local vel_l, vel_r = motor_conversions.vec_to_vels(motor_vector, robot.wheels.axis_length)
-  -- log("l " .. vel_l .. " r " .. vel_r)
   robot.wheels.set_velocity(vel_l, vel_r)
 end
 
@@ -178,7 +177,6 @@ function chain_link()
   if check_ground() == "prey" then
     current_state = ON_PREY
   elseif prev_rab == nil or next_rab == nil or (prey ~= nil and position_in_chain > prey.data[RAB_PREY_POSITION_INDEX]) then
-    log(robot.id .. "orcodioooooooooo" .. prey.data[RAB_PREY_POSITION_INDEX])
     position_in_chain = 0
     current_state = SEARCH
   else
@@ -230,7 +228,6 @@ function on_prey()
   robot.leds.set_all_colors("red")
   local stica = utils.return_rab_neighbour(RANGE_OF_SENSING_2, function(data) return (data[RAB_PREY_POSITION_INDEX] > 0 and data[RAB_PREY_POSITION_INDEX] < position_in_chain) end)
   if stica ~= nil then
-    log(robot.id .. " porcooooooooooooo " .. stica.data[RAB_PREY_POSITION_INDEX] .. " - " .. position_in_chain)
     position_in_chain = 0
     current_state = SEARCH
   end
