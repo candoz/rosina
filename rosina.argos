@@ -44,9 +44,9 @@
     </box>
 
     <distribute>
-      <position method="uniform" min="-1.9,-1.9,0" max="1.9,1.9,0" /> 
+      <position method="uniform" min="-2.9,-2.9,0" max="2.9,2.9,0" /> 
       <orientation method="uniform" min="0,0,0" max="360,0,0" /> 
-      <entity quantity="20" max_trials="100"> 
+      <entity quantity="80" max_trials="100"> 
         <foot-bot id="fb" rab_range = "1">
           <controller config="lua" />
         </foot-bot>
