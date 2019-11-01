@@ -53,7 +53,7 @@ function check_ground()
     end
   end
   if sensors_on_prey >= 1 then return "prey"
-  elseif sensors_on_nest >= 4 then return "nest"
+  elseif sensors_on_nest >= 3 then return "nest"
   else return "empty_floor" end
 end
 
