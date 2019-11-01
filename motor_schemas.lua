@@ -80,7 +80,7 @@ function motor_schemas.align(index, position_in_chain, range_of_sensing)
 end
 
 function motor_schemas.rotate_chain(rab)
-  return { length = 0.25, angle = rab.horizontal_bearing + 3 * math.pi / 2 }
+  return { length = 0.2, angle = rab.horizontal_bearing + 3 * math.pi / 2 }
 end
 
 return motor_schemas
