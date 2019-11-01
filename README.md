@@ -10,6 +10,9 @@ Our goal is to reproduce part of the work done by Shervin Nouyan, Alexandre Camp
 
 TODO: Link to the report and eventually some brief consideration
 
+The white dot represents the nest, while the black dots are meant to be preys.  
+The main goal is to form a chain of bots starting from the nest and arriving to one of the preys.
+
 ![Chain formation demo](chain-formation.gif "Chain formation demo")
 
 ## About the simulator
