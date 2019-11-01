@@ -18,12 +18,13 @@ local RAB_PREY_POSITION_INDEX = 4    -- the position in chain of the footbot ON_
 local current_state = SEARCH
 local position_in_chain = 0
 local motor_vector = {length = 0, angle = 0}
+local step_done = 0
 
 function init()
 end
 
 function step()
-  log(robot.id .. " " .. position_in_chain .. " " .. current_state)
+  --log(robot.id .. " " .. position_in_chain .. " " .. current_state)
 
   local c_tbl = {
       [SEARCH] = search,
@@ -79,6 +80,10 @@ function search()
 end
 
 function on_nest()
+  if step_done == 0 then
+    log("nest")
+    step_done = step_done + 1
+  end
   robot.leds.set_all_colors("green")
   emit_chain_info()
   local sensing_a_link_bot = utils.return_rab_neighbour(EXTENDED_RANGE_OF_SENSING, function(data) return data[RAB_STATE_INDEX] == CHAIN_LINK end) ~= nil
@@ -204,6 +209,10 @@ function chain_tail()
 end
 
 function on_prey()
+  if step_done == 0 then
+    log("prey")
+    step_done = step_done + 1
+  end
   robot.leds.set_all_colors("red")
   local sensing_prey_in_lower_position = utils.return_rab_neighbour(EXTENDED_RANGE_OF_SENSING, function(data) return (data[RAB_PREY_POSITION_INDEX] > 0 and data[RAB_PREY_POSITION_INDEX] < position_in_chain) end) ~= nil
   if sensing_prey_in_lower_position then
