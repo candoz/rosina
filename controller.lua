@@ -13,7 +13,8 @@ local RAB_STATE_INDEX = 1            -- the footbot's current state;
 local RAB_NUMBER_OF_CHAINS_INDEX = 2 -- how many chains are already formed;
 local RAB_POSITION_INDEX = 3         -- the footbot's position in chain (nest = 1, then 2, 3, 4 ..);
 local RAB_PREY_POSITION_INDEX = 4    -- the position in chain of the footbot ON_PREY (therefore, the length of the completed chain);
-                                     --   NB: if rab.data[RAB_PREY_POSITION_INDEX] > 0 it means that the chain is completed.
+                                     --   NB: if rab.data[RAB_PREY_POSITION_INDEX] > 0 it means that the chain is completed;
+local RAB_MAX_POSITION_INDEX = 5     -- the chain length.
 
 local current_state = SEARCH
 local position_in_chain = 0
@@ -167,7 +168,8 @@ function chain_link()
       local avoid_mono = motor_schemas.avoid_collisions_monosensor()
       local adjust_distance_prev = motor_schemas.adjust_distance_from_footbot(prev_bot, CHAIN_BOTS_DISTANCE)
       -- local adjust_distance_next = motor_schemas.adjust_distance_from_footbot(next_bot, CHAIN_BOTS_DISTANCE)
-      local align = motor_schemas.align(RAB_POSITION_INDEX, position_in_chain, EXTENDED_RANGE_OF_SENSING)
+      local max_rab = utils.return_max_rab_neighbour(RAB_MAX_POSITION_INDEX, EXTENDED_RANGE_OF_SENSING)
+      local align = motor_schemas.align(RAB_POSITION_INDEX, position_in_chain, max_rab.data[RAB_MAX_POSITION_INDEX], EXTENDED_RANGE_OF_SENSING)
       resulting_vector = vector.vec2_polar_sum(avoid_mono, adjust_distance_prev)
       -- resulting_vector = vector.vec2_polar_sum(resulting_vector, adjust_distance_next)
       resulting_vector = vector.vec2_polar_sum(resulting_vector, align)
@@ -226,6 +228,12 @@ end
 function emit_chain_info()
   robot.range_and_bearing.set_data(RAB_STATE_INDEX, current_state)
   robot.range_and_bearing.set_data(RAB_POSITION_INDEX, position_in_chain)
+  local max_rab = utils.return_max_rab_neighbour(RAB_MAX_POSITION_INDEX, EXTENDED_RANGE_OF_SENSING)
+  if max_rab ~= nil then
+    robot.range_and_bearing.set_data(RAB_MAX_POSITION_INDEX, math.max(position_in_chain, max_rab.data[RAB_MAX_POSITION_INDEX]))
+  else
+    robot.range_and_bearing.set_data(RAB_MAX_POSITION_INDEX, position_in_chain)
+  end
   if current_state == ON_PREY then
     robot.range_and_bearing.set_data(RAB_PREY_POSITION_INDEX, position_in_chain)
   else

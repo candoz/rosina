@@ -65,7 +65,7 @@ function motor_schemas.adjust_distance_from_footbot(rab, desired_distance)
   end
 end
 
-function motor_schemas.align(index, position_in_chain, range_of_sensing)
+function motor_schemas.align(index, position_in_chain, chain_length, range_of_sensing)
   local prev, next = nil, nil
   for _, rab in ipairs(robot.range_and_bearing) do
     if rab.range < range_of_sensing then
@@ -76,11 +76,14 @@ function motor_schemas.align(index, position_in_chain, range_of_sensing)
       end
     end
   end
-  return vector.vec2_polar_sum({length = 1.5, angle = prev.horizontal_bearing}, {length = 1.5, angle = next.horizontal_bearing})
+  local constant_vector_component = vector.vec2_polar_sum({length = 3, angle = prev.horizontal_bearing}, {length = 3, angle = next.horizontal_bearing})
+  local proportional_vector_module = position_in_chain / chain_length * 2
+  local proportional_vector_component = vector.vec2_polar_sum({length = proportional_vector_module, angle = prev.horizontal_bearing}, {length = proportional_vector_module, angle = next.horizontal_bearing})
+  return vector.vec2_polar_sum(proportional_vector_component, constant_vector_component)
 end
 
 function motor_schemas.rotate_chain(rab)
-  return { length = 0.2, angle = rab.horizontal_bearing + 3 * math.pi / 2 }
+  return { length = 0.5, angle = rab.horizontal_bearing + 3 * math.pi / 2 }
 end
 
 return motor_schemas
