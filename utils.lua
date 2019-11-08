@@ -17,7 +17,7 @@ function utils.get_sensor_with_highest_value(sensors)
   return highest
 end
 
--- Returns the first existing rab under the range_of_sensing that satisfies f(rab.data)
+-- Returns the first existing rab within the range_of_sensing that satisfies f(rab.data)
 function utils.return_rab_neighbour(range_of_sensing, f)
   for _, rab in ipairs(robot.range_and_bearing) do
     if rab.range < range_of_sensing and f(rab.data) then
@@ -27,8 +27,8 @@ function utils.return_rab_neighbour(range_of_sensing, f)
   return nil
 end
 
--- Returns the rab with the highest value at data[index] under the range_of_sensing
-function utils.return_max_rab_neighbour(index, range_of_sensing)
+-- Returns the rab with the highest value at data[index] within the range_of_sensing
+function utils.return_max_rab_neighbour(range_of_sensing, index)
   local max, max_rab = 0, nil
   for _, rab in ipairs(robot.range_and_bearing) do
     if rab.range < range_of_sensing and max < rab.data[index] then
@@ -39,8 +39,8 @@ function utils.return_max_rab_neighbour(index, range_of_sensing)
   return max_rab
 end
 
--- Returns the rab with the lowest value at data[index] under the range_of_sensing
-function utils.return_min_rab_neighbour(index, range_of_sensing)
+-- Returns the rab with the lowest value at data[index] within the range_of_sensing
+function utils.return_min_rab_neighbour(range_of_sensing, index)
   local min, min_rab = 9999, nil
   for _, rab in ipairs(robot.range_and_bearing) do
     if rab.range < range_of_sensing and min > rab.data[index] then
