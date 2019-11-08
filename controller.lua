@@ -5,16 +5,8 @@ utils = require "utils"
 
 local CHAIN_BOTS_DISTANCE = 25
 local EXPLORING_DISTANCE = 25
-local SEARCH, ON_NEST, EXPLORE_CHAIN, CHAIN_LINK, CHAIN_TAIL, ON_PREY = 1, 2, 3, 4, 5, 6 -- All the possible states that a footbot can be in
 local LIMITED_RANGE_OF_SENSING, EXTENDED_RANGE_OF_SENSING = 30, 60 -- The two RAB range of sensing considered
-
--- The rab.data INDEXES that represents:
-local RAB_STATE_INDEX = 1            -- the footbot's current state;
-local RAB_NUMBER_OF_CHAINS_INDEX = 2 -- how many chains are already formed;
-local RAB_POSITION_INDEX = 3         -- the footbot's position in chain (nest = 1, then 2, 3, 4 ..);
-local RAB_PREY_POSITION_INDEX = 4    -- the position in chain of the footbot ON_PREY (therefore, the length of the completed chain);
-                                     --   NB: if rab.data[RAB_PREY_POSITION_INDEX] > 0 it means that the chain is completed;
-local RAB_MAX_POSITION_INDEX = 5     -- the chain length.
+local SEARCH, ON_NEST, EXPLORE_CHAIN, CHAIN_LINK, CHAIN_TAIL, ON_PREY = 1, 2, 3, 4, 5, 6 -- All the possible states that a footbot can be in
 
 local current_state = SEARCH
 local position_in_chain = 0
@@ -22,24 +14,28 @@ local motor_vector = {length = 0, angle = 0}
 local step_done = 0
 
 function init()
+  -- The rab.data indexes that represents:
+  RAB_STATE_INDEX = 1            -- the footbot's current state;
+  RAB_NUMBER_OF_CHAINS_INDEX = 2 -- how many chains are already formed;
+  RAB_POSITION_INDEX = 3         -- the footbot's position in chain (nest = 1, then 2, 3, 4 ..);
+  RAB_PREY_POSITION_INDEX = 4    -- the position in chain of the footbot ON_PREY (therefore, the length of the completed chain)
+                                     --   NB: if rab.data[RAB_PREY_POSITION_INDEX] > 0 it means that the chain is completed;
+  RAB_MAX_POSITION_INDEX = 5     -- the chain length.
+  
+  BEHAVIOURS = { -- Map the given state to the corresponding behaviour function
+    [SEARCH] = search,
+    [ON_NEST] = on_nest,
+    [EXPLORE_CHAIN] = explore_chain,
+    [CHAIN_LINK] = chain_link,
+    [CHAIN_TAIL] = chain_tail,
+    [ON_PREY] = on_prey
+  }
 end
 
 function step()
-  --log(robot.id .. " " .. position_in_chain .. " " .. current_state)
-
-  local c_tbl = {
-      [SEARCH] = search,
-      [ON_NEST] = on_nest,
-      [EXPLORE_CHAIN] = explore_chain,
-      [CHAIN_LINK] = chain_link,
-      [CHAIN_TAIL] = chain_tail,
-      [ON_PREY] = on_prey
-    }
-  local fun = c_tbl[current_state]
-  if (fun) then
-    motor_vector = fun()
-  end
-  
+  -- log(robot.id .. " " .. position_in_chain .. " " .. current_state)
+  local current_behaviour = BEHAVIOURS[current_state]
+  motor_vector = current_behaviour()
   local vel_l, vel_r = motor_conversions.vec_to_vels(motor_vector, robot.wheels.axis_length)
   robot.wheels.set_velocity(vel_l, vel_r)
 end
@@ -54,8 +50,8 @@ function check_ground()
       sensors_on_nest = sensors_on_nest + 1 
     end
   end
-  if sensors_on_prey >= 1 then return "prey"
-  elseif sensors_on_nest >= 3 then return "nest"
+  if sensors_on_prey >= 1 then return "prey"     -- 1 sensor is enough because we'd like to stop as soon as we see the prey
+  elseif sensors_on_nest >= 3 then return "nest" -- 3 sensors because we want to position the nest bot approximately at the center of the nest
   else return "empty_floor" end
 end
 
