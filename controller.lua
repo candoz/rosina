@@ -27,7 +27,6 @@ function init()
     [ON_PREY] = on_prey
   }
 
-  finished = false
   current_state = SEARCH
   position_in_chain = 0
 end
@@ -39,7 +38,6 @@ function step()
 end
 
 function reset()
-  finished = false
   current_state = SEARCH
   position_in_chain = 0
 end
@@ -66,7 +64,6 @@ function search()
   else
     resulting_vector = vector.vec2_polar_sum(motor_schemas.move_straight(), motor_schemas.move_random())
     resulting_vector = vector.vec2_polar_sum(resulting_vector, motor_schemas.avoid_collisions_monosensor())
-    resulting_vector = vector.vec2_polar_sum(resulting_vector, motor_schemas.avoid_collisions_multisensor())
   end
   return resulting_vector
 end
@@ -93,7 +90,7 @@ function explore_chain()
   local resulting_vector = {length = 0, angle = 0}
 
   local sensing_a_completed_chain = nil ~= utils.return_rab_neighbour(EXTENDED_RANGE_OF_SENSING, function(data) return data[IRAB_PREYBOT_POSITION] > 0 end)
-  local max_position_rab = utils.return_max_rab_neighbour(LIMITED_RANGE_OF_SENSING, IRAB_POSITION)
+  local max_position_rab = utils.return_max_rab_neighbour(EXTENDED_RANGE_OF_SENSING, IRAB_POSITION)
   local sensing_max_position_rab = nil ~= max_position_rab
 
   if not sensing_max_position_rab or sensing_a_completed_chain then
@@ -116,14 +113,14 @@ function explore_chain()
       current_state = CHAIN_TAIL
 
     else -- keep exploring the chain
-      local prev_max_position_rab = utils.return_rab_neighbour(LIMITED_RANGE_OF_SENSING, function(data) return data[IRAB_POSITION] == max_position_rab.data[IRAB_POSITION] - 1 end)
+      local prev_max_position_rab = utils.return_rab_neighbour(EXTENDED_RANGE_OF_SENSING, function(data) return data[IRAB_POSITION] == max_position_rab.data[IRAB_POSITION] - 1 end)
       local sensing_prev_max_position_rab = nil ~= prev_max_position_rab
 
       local move_perpendicular = nil
       if sensing_prev_max_position_rab then
         move_perpendicular = motor_schemas.follow_chain_direction(max_position_rab, prev_max_position_rab)
       else
-        move_perpendicular = motor_schemas.move_perpendicular_to_rab(max_position_rab)
+        move_perpendicular = motor_schemas.move_perpendicular_to_rab(max_position_rab, false)
       end
       local avoid_mono = motor_schemas.avoid_collisions_monosensor()
       local adjust_distance = motor_schemas.adjust_distance_from_footbot(max_position_rab, EXPLORING_DISTANCE)
@@ -162,12 +159,10 @@ function chain_link()
     else
       local avoid_mono = motor_schemas.avoid_collisions_monosensor()
       local adjust_distance_prev = motor_schemas.adjust_distance_from_footbot(prev_bot, CHAIN_BOTS_DISTANCE)
-      -- local adjust_distance_next = motor_schemas.adjust_distance_from_footbot(next_bot, CHAIN_BOTS_DISTANCE)
       local max_position_rab = utils.return_max_rab_neighbour(EXTENDED_RANGE_OF_SENSING, IRAB_MAX_POSITION)
       local align = motor_schemas.align(IRAB_POSITION, position_in_chain, max_position_rab.data[IRAB_MAX_POSITION], EXTENDED_RANGE_OF_SENSING)
       
       resulting_vector = vector.vec2_polar_sum(avoid_mono, adjust_distance_prev)
-      -- resulting_vector = vector.vec2_polar_sum(resulting_vector, adjust_distance_next)
       resulting_vector = vector.vec2_polar_sum(resulting_vector, align)
     end
   end
@@ -201,9 +196,11 @@ function chain_tail()
         current_state = CHAIN_LINK
       
       else
+        local avoid_mono = motor_schemas.avoid_collisions_monosensor()
         local adjust_distance = motor_schemas.adjust_distance_from_footbot(prev_bot, CHAIN_BOTS_DISTANCE)
-        local direction_adjustment = motor_schemas.rotate_chain(prev_bot)
-        resulting_vector = vector.vec2_polar_sum(adjust_distance, direction_adjustment)
+        local direction_adjustment = motor_schemas.move_perpendicular_to_rab(prev_bot, true)
+        resulting_vector = vector.vec2_polar_sum(avoid_mono, adjust_distance)
+        resulting_vector = vector.vec2_polar_sum(resulting_vector, direction_adjustment)
       end
     end
   end
@@ -216,11 +213,6 @@ function on_prey()
   robot.leds.set_all_colors("red")
   emit_chain_info()
 
-  if finished == false then
-    log("Chain completed")
-    finished = true
-  end
-  
   local sensing_prey_in_lower_position = nil ~= utils.return_rab_neighbour(EXTENDED_RANGE_OF_SENSING, function(data) return (data[IRAB_PREYBOT_POSITION] > 0 and data[IRAB_PREYBOT_POSITION] < position_in_chain) end)
   if sensing_prey_in_lower_position then
     position_in_chain = 0
