@@ -51,4 +51,16 @@ function utils.return_min_rab_neighbour(range_of_sensing, index)
   return min_rab
 end
 
+-- Returns the rab with the lowest range
+function utils.return_closest_rab_neighbour(range_of_sensing)
+  local min, min_rab = range_of_sensing, nil
+  for _, rab in ipairs(robot.range_and_bearing) do
+    if rab.range < range_of_sensing and min > rab.range then
+      min = rab.range
+      min_rab = rab
+    end
+  end
+  return min_rab
+end
+
 return utils

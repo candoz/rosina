@@ -3,7 +3,7 @@ utils = require "utils"
 local motor_schemas = {}
 
 local PROXIMITY_THRESHOLD = 0.1
-local DISTANCE_TOLERANCE = 2  -- to avoid oscillating behaviour in Adjust_distance motor schema
+local DISTANCE_TOLERANCE = 1  -- to avoid oscillating behaviour in Adjust_distance motor schema
 
 function motor_schemas.move_straight()
   return {
@@ -36,7 +36,7 @@ end
 function motor_schemas.avoid_collisions_monosensor()
   local max_proximity_sensor = utils.get_sensor_with_highest_value(robot.proximity)
 	if max_proximity_sensor.value > PROXIMITY_THRESHOLD then
-    return {length = max_proximity_sensor.value * 2, angle = max_proximity_sensor.angle + math.pi}
+    return {length = max_proximity_sensor.value, angle = max_proximity_sensor.angle + math.pi}
   else
     return {length = 0, angle = 0}
 	end

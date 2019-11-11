@@ -90,7 +90,7 @@ function explore_chain()
   local resulting_vector = {length = 0, angle = 0}
 
   local sensing_a_completed_chain = nil ~= utils.return_rab_neighbour(EXTENDED_RANGE_OF_SENSING, function(data) return data[IRAB_PREYBOT_POSITION] > 0 end)
-  local max_position_rab = utils.return_max_rab_neighbour(EXTENDED_RANGE_OF_SENSING, IRAB_POSITION)
+  local max_position_rab = utils.return_max_rab_neighbour(LIMITED_RANGE_OF_SENSING, IRAB_POSITION)
   local sensing_max_position_rab = nil ~= max_position_rab
 
   if not sensing_max_position_rab or sensing_a_completed_chain then
@@ -113,7 +113,7 @@ function explore_chain()
       current_state = CHAIN_TAIL
 
     else -- keep exploring the chain
-      local prev_max_position_rab = utils.return_rab_neighbour(EXTENDED_RANGE_OF_SENSING, function(data) return data[IRAB_POSITION] == max_position_rab.data[IRAB_POSITION] - 1 end)
+      local prev_max_position_rab = utils.return_rab_neighbour(LIMITED_RANGE_OF_SENSING, function(data) return data[IRAB_POSITION] == max_position_rab.data[IRAB_POSITION] - 1 end)
       local sensing_prev_max_position_rab = nil ~= prev_max_position_rab
 
       local move_perpendicular = nil
@@ -123,7 +123,7 @@ function explore_chain()
         move_perpendicular = motor_schemas.move_perpendicular_to_rab(max_position_rab, false)
       end
       local avoid_mono = motor_schemas.avoid_collisions_monosensor()
-      local adjust_distance = motor_schemas.adjust_distance_from_footbot(max_position_rab, EXPLORING_DISTANCE)
+      local adjust_distance = motor_schemas.adjust_distance_from_footbot(utils.return_closest_rab_neighbour(EXTENDED_RANGE_OF_SENSING), EXPLORING_DISTANCE)
 
       resulting_vector = vector.vec2_polar_sum(avoid_mono, move_perpendicular)
       resulting_vector = vector.vec2_polar_sum(resulting_vector, adjust_distance)
