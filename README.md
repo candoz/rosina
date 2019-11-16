@@ -8,6 +8,12 @@ Our goal is to reproduce part of the work done by Shervin Nouyan, Alexandre Camp
 
 You may find more information on programming robots in Lua with ARGoS at: http://www.argos-sim.info/plow2015/
 
+## How to run the simulation
+
+* Install the [ARGoS simulator](http://www.argos-sim.info)
+* Clone our project
+* Inside the project folder execute `argos3 -c rosina.argos`
+
 ## Considerations and results
 
 TODO: Link to the report and eventually some brief consideration
@@ -15,13 +21,7 @@ TODO: Link to the report and eventually some brief consideration
 The white dot represents the nest, while the black dots are meant to be preys.  
 The main goal is to form a chain of bots starting from the nest and arriving to one of the preys.
 
-![Chain formation demo](chain-formation.gif "Chain formation demo")
-
-## How to run the simulation
-
-* Install the [ARGoS simulator](http://www.argos-sim.info)
-* Clone our project
-* Inside the project folder execute `argos3 -c rosina.argos`
+![Chain formation demo](res/chain-formation.gif "Chain formation demo")
 
 ## License
 RoSinA project is licensed under the [GPL 3.0 License](https://www.gnu.org/licenses/gpl-3.0.html).
