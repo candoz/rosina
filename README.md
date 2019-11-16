@@ -6,20 +6,20 @@ This is the final project for the [Intelligent Robotic Systems course](https://w
 
 Our goal is to reproduce part of the work done by Shervin Nouyan, Alexandre Campo and Marco Dorigo regarding **robotic chain formations** with the aim of deepening the subject, reworking the controller logic and finally simulate it in an ARGoS environment. Link to the article: [Path formation in a robot swarm](https://link.springer.com/article/10.1007/s11721-007-0009-6).
 
-You may find more information on programming robots in Lua with ARGoS at: http://www.argos-sim.info/plow2015/
-
 ## How to run the simulation
 
 * Install the [ARGoS simulator](http://www.argos-sim.info)
-* Clone our project
-* Inside the project folder execute `argos3 -c rosina.argos`
+* `git clone https://github.com/candoz/rosina.git`
+* `argos3 -c rosina.argos`
 
-## Considerations and results
+Note: you may find more information on programming robots in Lua with ARGoS at http://www.argos-sim.info/plow2015/
 
-TODO: Link to the report and eventually some brief consideration
+## Results
 
-The white dot represents the nest, while the black dots are meant to be preys.  
-The main goal is to form a chain of bots starting from the nest and arriving to one of the preys.
+We provide a [detailed report](report.pdf) containing design choices, considerations and tests.
+
+A demo of the final application is provided below. The main goal is to form a chain of bots starting from the nest and arriving to one of the preys. The white dot represents the nest, while the black dots are meant to be preys.  
+It's configured with a swarm size of 30 robots and a noise level of 0.3 on all the sensors and actuators.
 
 ![Chain formation demo](res/chain-formation.gif "Chain formation demo")
 
