@@ -1,4 +1,4 @@
-utils = require "utils"
+utils = require "src/utils"
 
 local motor_schemas = {}
 

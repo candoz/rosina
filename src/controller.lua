@@ -1,7 +1,7 @@
-vector = require "vector"
-motor_schemas = require "motor_schemas"
-motor_conversions = require "motor_conversions"
-utils = require "utils"
+vector = require "src/vector"
+motor_schemas = require "src/motor_schemas"
+motor_conversions = require "src/motor_conversions"
+utils = require "src/utils"
 
 local CHAIN_BOTS_DISTANCE = 25 -- the distance to keep between the bots that are forming the chain
 local EXPLORING_DISTANCE = 25 -- the distance to keep from the chain while exploring it
